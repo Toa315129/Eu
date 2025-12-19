@@ -3,33 +3,34 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>TOMOPHOTO KIOSK</title>
+<title>TOMOPHOTO – Beach Booth</title>
 
 <style>
-/* =========================================================
-   THEME
-========================================================= */
+/* ===================================================
+   THEME – MUJI BEACH
+=================================================== */
 :root{
-    --bg:#f6f4f1;
-    --ink:#1f1f1f;
-    --soft:#b8ada3;
-    --line:#e3ddd6;
-    --accent:#8d7a6a;
+    --cream:#f7f4ef;
+    --sand:#e8dfd3;
+    --brown:#8a6f5a;
+    --brown-soft:#b8a89a;
+    --ink:#2a2a2a;
+    --line:#e2dbd2;
 }
 
-/* =========================================================
-   RESET + FONT
-========================================================= */
+/* ===================================================
+   RESET + FONT (THIN)
+=================================================== */
 *{
     margin:0;
     padding:0;
     box-sizing:border-box;
     font-family:
-        "SF Pro Display",
-        "Helvetica Neue",
-        "Inter",
-        system-ui,
-        sans-serif;
+      "SF Pro Display",
+      "Helvetica Neue",
+      "Inter",
+      system-ui,
+      sans-serif;
     font-weight:300;
     user-select:none;
 }
@@ -37,61 +38,63 @@
 body{
     width:100vw;
     height:100vh;
-    background:#000;
+    background:#111;
     overflow:hidden;
 }
 
-/* =========================================================
+/* ===================================================
    SCREENS
-========================================================= */
+=================================================== */
 .screen{
     position:absolute;
     inset:0;
-    background:var(--bg);
+    background:var(--cream);
     display:none;
 }
-.screen.active{
-    display:flex;
-}
+.screen.active{ display:flex; }
 
-/* =========================================================
-   IDLE SCREEN
-========================================================= */
+/* ===================================================
+   IDLE
+=================================================== */
 #idle{
     align-items:center;
     justify-content:center;
     flex-direction:column;
-    gap:24px;
+    gap:22px;
 }
-
 #idle h1{
-    font-size:42px;
-    letter-spacing:10px;
+    letter-spacing:12px;
+    font-size:44px;
 }
 #idle p{
-    font-size:16px;
     opacity:.6;
 }
-.idle-btn{
-    margin-top:30px;
+#idle .wave{
     width:140px;
     height:140px;
     border-radius:50%;
-    border:2px solid var(--accent);
-    background:white;
-    font-size:14px;
+    border:2px solid var(--brown);
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    animation:pulse 3s infinite;
+}
+@keyframes pulse{
+    0%{ box-shadow:0 0 0 0 rgba(138,111,90,.3);}
+    70%{ box-shadow:0 0 0 25px rgba(138,111,90,0);}
 }
 
-/* =========================================================
-   BOOTH LAYOUT
-========================================================= */
+/* ===================================================
+   BOOTH
+=================================================== */
 #booth{
     flex-direction:column;
 }
 
+/* HEADER */
 .header{
-    height:70px;
-    padding:0 32px;
+    height:64px;
+    padding:0 28px;
     display:flex;
     justify-content:space-between;
     align-items:center;
@@ -103,25 +106,21 @@ body{
 }
 .header span{
     font-size:12px;
-    opacity:.5;
+    opacity:.6;
 }
 
-/* =========================================================
-   MAIN
-========================================================= */
+/* MAIN */
 .main{
     flex:1;
     display:grid;
-    grid-template-columns: 1.2fr 1fr;
-    gap:24px;
-    padding:24px 32px;
+    grid-template-columns:1.2fr 1fr;
+    gap:22px;
+    padding:22px 28px;
 }
 
-/* =========================================================
-   CAMERA
-========================================================= */
+/* CAMERA */
 .camera{
-    background:black;
+    background:#000;
     border-radius:20px;
     overflow:hidden;
     position:relative;
@@ -130,6 +129,17 @@ video{
     width:100%;
     height:100%;
     object-fit:cover;
+}
+
+/* warm overlay */
+.camera::after{
+    content:"";
+    position:absolute;
+    inset:0;
+    background:radial-gradient(circle at top,
+        rgba(255,230,200,.15),
+        rgba(0,0,0,0));
+    pointer-events:none;
 }
 
 .flash{
@@ -145,14 +155,12 @@ video{
     display:none;
     align-items:center;
     justify-content:center;
-    font-size:160px;
+    font-size:150px;
     color:white;
     background:rgba(0,0,0,.4);
 }
 
-/* =========================================================
-   SIDE
-========================================================= */
+/* SIDE */
 .side{
     display:flex;
     flex-direction:column;
@@ -161,8 +169,8 @@ video{
 
 .state{
     border:1px solid var(--line);
-    border-radius:20px;
-    padding:20px;
+    border-radius:18px;
+    padding:18px;
 }
 .state h2{
     font-size:18px;
@@ -174,13 +182,11 @@ video{
     margin-top:6px;
 }
 .step{
-    font-size:64px;
-    margin-top:12px;
+    font-size:56px;
+    margin-top:10px;
 }
 
-/* =========================================================
-   PREVIEW
-========================================================= */
+/* PREVIEW */
 .preview{
     display:flex;
     gap:10px;
@@ -189,74 +195,63 @@ video{
 .preview div{
     flex:1;
     aspect-ratio:3/4;
-    background:#eee;
+    background:var(--sand);
     border-radius:14px;
-    overflow:hidden;
+    padding:6px;
 }
 .preview img{
     width:100%;
     height:100%;
     object-fit:cover;
+    border-radius:10px;
 }
 
-/* =========================================================
-   CONTROLS
-========================================================= */
+/* CONTROLS */
 .controls{
     display:flex;
     justify-content:space-around;
     align-items:center;
-    padding-top:12px;
 }
-
 .btn{
-    width:80px;
-    height:80px;
+    width:78px;
+    height:78px;
     border-radius:50%;
     border:1px solid var(--line);
     background:white;
     font-size:11px;
+    transition:.2s;
+}
+.btn:active{
+    transform:scale(.95);
 }
 .btn.main{
-    border:2px solid var(--accent);
-    box-shadow:0 0 0 8px rgba(141,122,106,.18);
+    border:2px solid var(--brown);
+    box-shadow:0 0 0 7px rgba(138,111,90,.2);
 }
-.btn:disabled{
-    opacity:.3;
-}
+.btn:disabled{ opacity:.3; }
 
-/* =========================================================
-   RESULT STRIP (HIDDEN CANVAS)
-========================================================= */
-canvas{
-    display:none;
-}
+/* CANVAS */
+canvas{ display:none; }
 </style>
 </head>
 
 <body>
 
-<!-- ======================================================
-     IDLE SCREEN
-====================================================== -->
+<!-- IDLE -->
 <div class="screen active" id="idle">
     <h1>TOMOPHOTO</h1>
-    <p>Touch to start</p>
-    <button class="idle-btn" id="enter">START</button>
+    <p>Beach Photo Booth</p>
+    <div class="wave" id="enter">START</div>
 </div>
 
-<!-- ======================================================
-     BOOTH SCREEN
-====================================================== -->
+<!-- BOOTH -->
 <div class="screen" id="booth">
-
     <div class="header">
         <h1>TOMOPHOTO</h1>
         <span id="status">READY</span>
     </div>
 
     <div class="main">
-
         <div class="camera">
             <video id="video" autoplay playsinline></video>
             <div class="flash" id="flash"></div>
@@ -266,7 +261,7 @@ canvas{
         <div class="side">
             <div class="state">
                 <h2 id="state">READY</h2>
-                <p id="hint">Get ready in the frame</p>
+                <p id="hint">Stand in the frame</p>
                 <div class="step" id="step">—</div>
 
                 <div class="preview">
@@ -283,178 +278,170 @@ canvas{
                 <button class="btn" id="reset" disabled>RESET</button>
             </div>
         </div>
-
     </div>
 </div>
 
 <canvas id="strip"></canvas>
+<canvas id="videoCanvas"></canvas>
 
 <script>
-/* =========================================================
-   ELEMENTS
-========================================================= */
+/* ===== BASIC ===== */
 const idle = document.getElementById("idle");
 const booth = document.getElementById("booth");
-
 const video = document.getElementById("video");
 const flash = document.getElementById("flash");
 const countdown = document.getElementById("countdown");
 
-const stateEl = document.getElementById("state");
-const stepEl = document.getElementById("step");
+const previews=[p1,p2,p3];
+const strip=document.getElementById("strip");
+const sctx=strip.getContext("2d");
 
-const previews = [
-    document.getElementById("p1"),
-    document.getElementById("p2"),
-    document.getElementById("p3")
-];
+const vCanvas=document.getElementById("videoCanvas");
+const vctx=vCanvas.getContext("2d");
 
-const shootBtn = document.getElementById("shoot");
-const imgBtn = document.getElementById("img");
-const vidBtn = document.getElementById("vid");
-const resetBtn = document.getElementById("reset");
+const shootBtn=shoot;
+const imgBtn=img;
+const vidBtn=vid;
+const resetBtn=reset;
 
-const strip = document.getElementById("strip");
-const sctx = strip.getContext("2d");
+let shots=[];
 
-const temp = document.createElement("canvas");
-const tctx = temp.getContext("2d");
-
-let shots = [];
-const TOTAL = 3;
-
-/* =========================================================
-   CAMERA
-========================================================= */
+/* CAMERA */
 navigator.mediaDevices.getUserMedia({video:{facingMode:"user"}})
-.then(s => video.srcObject = s);
+.then(s=>video.srcObject=s);
 
-/* =========================================================
-   FLOW
-========================================================= */
-const sleep = ms => new Promise(r=>setTimeout(r,ms));
-
-document.getElementById("enter").onclick = ()=>{
+enter.onclick=()=>{
     idle.classList.remove("active");
     booth.classList.add("active");
 };
 
-async function shoot(){
+/* UTIL */
+const sleep=ms=>new Promise(r=>setTimeout(r,ms));
+
+/* SHOOT */
+shootBtn.onclick=async()=>{
     shots=[];
     previews.forEach(p=>p.src="");
-    imgBtn.disabled = true;
-    vidBtn.disabled = true;
-    resetBtn.disabled = true;
+    imgBtn.disabled=true;
+    vidBtn.disabled=true;
+    resetBtn.disabled=true;
 
-    stateEl.textContent="SHOOTING";
-
-    for(let i=0;i<TOTAL;i++){
-        stepEl.textContent=i+1;
+    for(let i=0;i<3;i++){
         countdown.style.display="flex";
-
         for(let n=3;n>0;n--){
             countdown.textContent=n;
             await sleep(1000);
         }
-
         countdown.style.display="none";
         flash.style.opacity=1;
-        await sleep(120);
+        await sleep(100);
         flash.style.opacity=0;
 
-        temp.width = video.videoWidth;
-        temp.height = video.videoHeight;
-        tctx.drawImage(video,0,0);
-
-        shots.push(temp.toDataURL("image/png"));
-        previews[i].src = shots[i];
-
-        await sleep(400);
+        const c=document.createElement("canvas");
+        c.width=video.videoWidth;
+        c.height=video.videoHeight;
+        c.getContext("2d").drawImage(video,0,0);
+        shots.push(c.toDataURL("image/png"));
+        previews[i].src=shots[i];
+        await sleep(600);
     }
 
     buildStrip();
-    stateEl.textContent="DONE";
-    stepEl.textContent="✓";
     imgBtn.disabled=false;
     vidBtn.disabled=false;
     resetBtn.disabled=false;
-}
+};
 
+/* STRIP */
 function buildStrip(){
-    const w = temp.width;
-    const h = temp.height;
-    const pad = 30;
-    const head = 120;
+    const img=new Image();
+    img.src=shots[0];
+    img.onload=()=>{
+        const w=img.width;
+        const h=img.height;
+        const pad=26;
+        const head=120;
 
-    strip.width = w + pad*2;
-    strip.height = head + h*TOTAL + pad*(TOTAL+1);
+        strip.width=w+pad*2;
+        strip.height=head+h*3+pad*4;
 
-    sctx.fillStyle="#fff";
-    sctx.fillRect(0,0,strip.width,strip.height);
+        sctx.fillStyle="#fff";
+        sctx.fillRect(0,0,strip.width,strip.height);
+        sctx.fillStyle="#2a2a2a";
+        sctx.font="300 36px SF Pro Display";
+        sctx.textAlign="center";
+        sctx.fillText("TOMOPHOTO",strip.width/2,70);
+        sctx.font="300 14px SF Pro Display";
+        sctx.fillText(new Date().toLocaleDateString(),strip.width/2,100);
 
-    sctx.fillStyle="#1f1f1f";
-    sctx.font="300 40px 'SF Pro Display','Helvetica Neue'";
-    sctx.textAlign="center";
-    sctx.fillText("TOMOPHOTO", strip.width/2, 80);
-
-    shots.forEach((src,i)=>{
-        const img = new Image();
-        img.onload = ()=>{
-            const y = head + pad + i*(h+pad);
-            sctx.drawImage(img,pad,y,w,h);
-        };
-        img.src = src;
-    });
+        shots.forEach((src,i)=>{
+            const im=new Image();
+            im.onload=()=>{
+                const y=head+pad+i*(h+pad);
+                sctx.strokeStyle="#8a6f5a";
+                sctx.lineWidth=1;
+                sctx.strokeRect(pad-4,y-4,w+8,h+8);
+                sctx.drawImage(im,pad,y,w,h);
+            };
+            im.src=src;
+        });
+    };
 }
 
-/* =========================================================
-   DOWNLOAD IMAGE
-========================================================= */
-imgBtn.onclick = ()=>{
-    const a = document.createElement("a");
-    a.href = strip.toDataURL("image/png");
-    a.download = "TOMOPHOTO.png";
+/* IMAGE */
+imgBtn.onclick=()=>{
+    const a=document.createElement("a");
+    a.href=strip.toDataURL("image/png");
+    a.download="TOMOPHOTO.png";
     a.click();
 };
 
-/* =========================================================
-   VIDEO (MP4 preferred)
-========================================================= */
-vidBtn.onclick = async ()=>{
-    const stream = strip.captureStream(30);
-    let recorder;
-    let chunks=[];
-
-    try{
-        recorder = new MediaRecorder(stream,{mimeType:"video/mp4"});
-    }catch{
-        recorder = new MediaRecorder(stream,{mimeType:"video/webm"});
+/* VIDEO – slideshow */
+vidBtn.onclick=async()=>{
+    const imgs=[];
+    for(const src of shots){
+        const i=new Image();
+        i.src=src;
+        await i.decode();
+        imgs.push(i);
     }
 
-    recorder.ondataavailable = e => chunks.push(e.data);
-    recorder.start();
+    vCanvas.width=imgs[0].width;
+    vCanvas.height=imgs[0].height;
 
-    await sleep(3000);
-    recorder.stop();
+    const stream=vCanvas.captureStream(30);
+    let rec;
+    try{
+        rec=new MediaRecorder(stream,{mimeType:"video/mp4"});
+    }catch{
+        rec=new MediaRecorder(stream,{mimeType:"video/webm"});
+    }
+    const chunks=[];
+    rec.ondataavailable=e=>chunks.push(e.data);
+    rec.start();
 
-    recorder.onstop = ()=>{
-        const blob = new Blob(chunks,{type:recorder.mimeType});
-        const url = URL.createObjectURL(blob);
-        const a = document.createElement("a");
-        a.href = url;
-        a.download = recorder.mimeType.includes("mp4") ? "TOMOPHOTO.mp4" : "TOMOPHOTO.webm";
+    for(const im of imgs){
+        vctx.clearRect(0,0,vCanvas.width,vCanvas.height);
+        vctx.globalAlpha=0;
+        for(let a=0;a<=1;a+=0.05){
+            vctx.globalAlpha=a;
+            vctx.drawImage(im,0,0);
+            await sleep(50);
+        }
+        await sleep(1500);
+    }
+
+    rec.stop();
+    rec.onstop=()=>{
+        const blob=new Blob(chunks,{type:rec.mimeType});
+        const a=document.createElement("a");
+        a.href=URL.createObjectURL(blob);
+        a.download=rec.mimeType.includes("mp4")?"TOMOPHOTO.mp4":"TOMOPHOTO.webm";
         a.click();
     };
 };
 
-/* =========================================================
-   RESET
-========================================================= */
-resetBtn.onclick = ()=>{
-    location.reload();
-};
-
-shootBtn.onclick = shoot;
+resetBtn.onclick=()=>location.reload();
 </script>
 
 </body>
