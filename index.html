@@ -24,16 +24,11 @@ body{
   --ink:#2a2a2a;
 }
 
-/* ---------- screen ---------- */
-.screen{
-  position:absolute;
-  inset:0;
-  background:var(--cream);
-  display:none;
-}
+/* ===== screen ===== */
+.screen{position:absolute;inset:0;background:var(--cream);display:none}
 .screen.active{display:flex}
 
-/* ---------- idle ---------- */
+/* ===== idle ===== */
 #idle{
   flex-direction:column;
   align-items:center;
@@ -42,17 +37,16 @@ body{
 }
 #idle h1{
   font-weight:300;
-  letter-spacing:12px;
-  font-size:44px;
+  letter-spacing:14px;
+  font-size:46px;
 }
-#idle .touch{
+.touch{
   width:160px;height:160px;
   border-radius:50%;
   border:2px solid var(--brown);
   display:flex;
   align-items:center;
   justify-content:center;
-  font-size:14px;
   letter-spacing:2px;
   animation:pulse 3s infinite;
 }
@@ -61,7 +55,7 @@ body{
   70%{box-shadow:0 0 0 40px rgba(138,111,90,0)}
 }
 
-/* ---------- select ---------- */
+/* ===== select ===== */
 .select{
   flex-direction:column;
   align-items:center;
@@ -80,11 +74,9 @@ body{
   justify-content:center;
   font-size:36px;
 }
-.option.active{
-  border:2px solid var(--brown);
-}
+.option.active{border:2px solid var(--brown)}
 
-/* ---------- booth ---------- */
+/* ===== booth ===== */
 #booth{flex-direction:column}
 .header{
   height:64px;
@@ -93,10 +85,7 @@ body{
   justify-content:center;
   border-bottom:1px solid var(--line);
 }
-.header h1{
-  font-weight:300;
-  letter-spacing:6px;
-}
+.header h1{font-weight:300;letter-spacing:6px}
 
 .main{
   flex:1;
@@ -105,28 +94,16 @@ body{
   gap:20px;
   padding:20px;
 }
-
 .camera{
   background:#000;
   border-radius:22px;
   overflow:hidden;
   position:relative;
 }
-video{
-  width:100%;
-  height:100%;
-  object-fit:cover;
-}
-.flash{
-  position:absolute;
-  inset:0;
-  background:#fff;
-  opacity:0;
-  pointer-events:none;
-}
+video{width:100%;height:100%;object-fit:cover}
+.flash{position:absolute;inset:0;background:#fff;opacity:0}
 .countdown{
-  position:absolute;
-  inset:0;
+  position:absolute;inset:0;
   display:none;
   align-items:center;
   justify-content:center;
@@ -135,34 +112,17 @@ video{
   background:rgba(0,0,0,.4);
 }
 
-/* ---------- side ---------- */
-.side{
-  display:flex;
-  flex-direction:column;
-  justify-content:space-between;
-}
-.preview{
-  display:grid;
-  gap:10px;
-}
+.side{display:flex;flex-direction:column;justify-content:space-between}
+.preview{display:grid;gap:10px}
 .slot{
   background:var(--sand);
   border-radius:16px;
   padding:6px;
 }
-.slot img{
-  width:100%;
-  height:100%;
-  object-fit:cover;
-  border-radius:12px;
-}
+.slot img{width:100%;border-radius:12px}
 
-/* ---------- buttons ---------- */
-.controls{
-  display:flex;
-  flex-direction:column;
-  gap:14px;
-}
+/* ===== buttons ===== */
+.controls{display:flex;flex-direction:column;gap:14px}
 .btn{
   all:unset;
   height:56px;
@@ -170,7 +130,6 @@ video{
   display:flex;
   align-items:center;
   justify-content:center;
-  font-size:15px;
   background:#fff;
   border:1px solid var(--line);
 }
@@ -179,21 +138,45 @@ video{
   border-radius:36px;
   border:2px solid var(--brown);
 }
-.btn:active{transform:scale(.97)}
 .btn[disabled]{opacity:.4}
 
-/* ---------- result ---------- */
+/* ===== printer effect ===== */
 #result{
   flex-direction:column;
   align-items:center;
   justify-content:center;
   gap:20px;
 }
-.frame{
+.printer{
+  position:relative;
+  width:360px;
+  height:520px;
+}
+.printer .slot{
+  width:240px;
+  height:16px;
+  background:#444;
+  margin:0 auto;
+  border-radius:0 0 8px 8px;
+}
+.paper{
+  position:absolute;
+  top:12px;
+  left:50%;
+  transform:translateX(-50%) translateY(-420px);
+  width:300px;
   background:#fff;
-  padding:22px;
-  border-radius:26px;
-  box-shadow:0 20px 50px rgba(0,0,0,.25);
+  border-radius:18px;
+  box-shadow:0 20px 40px rgba(0,0,0,.25);
+  overflow:hidden;
+  animation:printOut 3s ease-out forwards;
+}
+.paper canvas{width:100%}
+
+@keyframes printOut{
+  0%{transform:translateX(-50%) translateY(-420px)}
+  60%{transform:translateX(-50%) translateY(20px)}
+  100%{transform:translateX(-50%) translateY(0)}
 }
 
 canvas{display:none}
@@ -241,8 +224,7 @@ canvas{display:none}
       <div class="preview" id="preview"></div>
       <div class="controls">
         <button class="btn primary" id="shoot">● ถ่ายรูป</button>
-        <button class="btn" id="saveImage" disabled>บันทึกรูป</button>
-        <button class="btn" id="reset" disabled>ถ่ายใหม่</button>
+        <button class="btn" id="save" disabled>บันทึกรูป</button>
       </div>
     </div>
   </div>
@@ -250,160 +232,107 @@ canvas{display:none}
 
 <!-- RESULT -->
 <div class="screen" id="result">
-  <div class="frame">
-    <canvas id="strip"></canvas>
+  <div class="printer">
+    <div class="slot"></div>
+    <div class="paper">
+      <canvas id="strip"></canvas>
+    </div>
   </div>
   <button class="btn" onclick="location.reload()">เริ่มใหม่</button>
 </div>
 
 <script>
-/* ========= VARIABLES ========= */
-let count = 4;
-let filter = "none";
-let shots = [];
+let count=4,shots=[];
+const video=document.getElementById("video");
+const preview=document.getElementById("preview");
+const strip=document.getElementById("strip");
+const ctx=strip.getContext("2d");
+const countdown=document.getElementById("countdown");
+const flash=document.getElementById("flash");
 
-const idle = document.getElementById("idle");
-const selectCount = document.getElementById("selectCount");
-const selectFilter = document.getElementById("selectFilter");
-const booth = document.getElementById("booth");
-const result = document.getElementById("result");
+navigator.mediaDevices.getUserMedia({video:{facingMode:"user"}})
+.then(s=>video.srcObject=s);
 
-const video = document.getElementById("video");
-const preview = document.getElementById("preview");
-const strip = document.getElementById("strip");
-const ctx = strip.getContext("2d");
+enter.onclick=()=>{idle.classList.remove("active");selectCount.classList.add("active")};
 
-const countdownEl = document.getElementById("countdown");
-const flash = document.getElementById("flash");
-
-const shootBtn = document.getElementById("shoot");
-const saveBtn = document.getElementById("saveImage");
-const resetBtn = document.getElementById("reset");
-
-/* ========= CAMERA ========= */
-navigator.mediaDevices.getUserMedia({
-  video:{facingMode:"user"}
-}).then(stream=>{
-  video.srcObject = stream;
-});
-
-/* ========= FLOW ========= */
-document.getElementById("enter").onclick = ()=>{
-  idle.classList.remove("active");
-  selectCount.classList.add("active");
-};
-
-/* select count */
-document.querySelectorAll("[data-count]").forEach(el=>{
-  el.onclick = ()=>{
-    document.querySelectorAll("[data-count]").forEach(x=>x.classList.remove("active"));
-    el.classList.add("active");
-    count = +el.dataset.count;
+document.querySelectorAll("[data-count]").forEach(o=>{
+  o.onclick=()=>{
+    count=+o.dataset.count;
     selectCount.classList.remove("active");
     selectFilter.classList.add("active");
   };
 });
 
-/* select filter */
-document.querySelectorAll("[data-filter]").forEach(el=>{
-  el.onclick = ()=>{
-    document.querySelectorAll("[data-filter]").forEach(x=>x.classList.remove("active"));
-    el.classList.add("active");
-    filter = el.dataset.filter;
-    video.style.filter = filter;
+document.querySelectorAll("[data-filter]").forEach(o=>{
+  o.onclick=()=>{
+    video.style.filter=o.dataset.filter;
     selectFilter.classList.remove("active");
     booth.classList.add("active");
-    buildPreview();
+    preview.innerHTML="";
+    preview.style.gridTemplateColumns=`repeat(${Math.min(count,3)},1fr)`;
+    for(let i=0;i<count;i++){
+      const d=document.createElement("div");
+      d.className="slot";
+      d.innerHTML="<img>";
+      preview.appendChild(d);
+    }
   };
 });
 
-/* ========= PREVIEW ========= */
-function buildPreview(){
-  preview.innerHTML = "";
-  preview.style.gridTemplateColumns = `repeat(${Math.min(count,3)},1fr)`;
+shoot.onclick=async()=>{
+  shots=[];
+  const imgs=preview.querySelectorAll("img");
   for(let i=0;i<count;i++){
-    const d = document.createElement("div");
-    d.className = "slot";
-    d.innerHTML = "<img>";
-    preview.appendChild(d);
-  }
-}
+    countdown.style.display="flex";
+    for(let j=3;j>0;j--){countdown.textContent=j;await sleep(1000)}
+    countdown.style.display="none";
+    flash.style.opacity=1;await sleep(120);flash.style.opacity=0;
 
-/* ========= SHOOT ========= */
-shootBtn.onclick = async ()=>{
-  shots = [];
-  saveBtn.disabled = true;
-  resetBtn.disabled = true;
-
-  const imgs = preview.querySelectorAll("img");
-
-  for(let i=0;i<count;i++){
-    await countdown();
-    flash.style.opacity = 1;
-    await sleep(120);
-    flash.style.opacity = 0;
-
-    const c = document.createElement("canvas");
-    c.width = video.videoWidth;
-    c.height = video.videoHeight;
+    const c=document.createElement("canvas");
+    c.width=video.videoWidth;
+    c.height=video.videoHeight;
     c.getContext("2d").drawImage(video,0,0);
     shots.push(c);
-    imgs[i].src = c.toDataURL("image/jpeg",0.8);
+    imgs[i].src=c.toDataURL("image/jpeg",0.8);
   }
-
   buildStrip();
-  saveBtn.disabled = false;
-  resetBtn.disabled = false;
 };
 
-/* ========= COUNTDOWN ========= */
-async function countdown(){
-  countdownEl.style.display = "flex";
-  for(let i=3;i>0;i--){
-    countdownEl.textContent = i;
-    await sleep(1000);
-  }
-  countdownEl.style.display = "none";
-}
-
-/* ========= BUILD STRIP ========= */
 function buildStrip(){
-  const w = shots[0].width;
-  const h = shots[0].height;
-  strip.width = w + 80;
-  strip.height = h * count + 160;
+  const w=shots[0].width,h=shots[0].height;
+  strip.width=w+80;
+  strip.height=h*count+200;
 
-  ctx.fillStyle = "#fff";
+  ctx.fillStyle="#fff";
   ctx.fillRect(0,0,strip.width,strip.height);
 
-  ctx.fillStyle = "#2a2a2a";
-  ctx.font = "300 36px Inter";
-  ctx.textAlign = "center";
-  ctx.fillText("TOMOPHOTO", strip.width/2, 60);
+  ctx.fillStyle="#2a2a2a";
+  ctx.font="300 36px Inter";
+  ctx.textAlign="center";
+  ctx.fillText("TOMOPHOTO",strip.width/2,60);
 
   shots.forEach((c,i)=>{
-    const y = 120 + i*h;
-    ctx.strokeStyle = "#8a6f5a";
+    const y=120+i*h;
+    ctx.strokeStyle="#8a6f5a";
     ctx.strokeRect(34,y-6,w+12,h+12);
     ctx.drawImage(c,40,y,w,h);
   });
+
+  ctx.font="300 14px Inter";
+  ctx.fillText(new Date().toLocaleString(),strip.width/2,strip.height-20);
 
   booth.classList.remove("active");
   result.classList.add("active");
 }
 
-/* ========= SAVE ========= */
-saveBtn.onclick = ()=>{
-  strip.toBlob(blob=>{
-    const a = document.createElement("a");
-    a.href = URL.createObjectURL(blob);
-    a.download = "TOMOPHOTO.png";
+save.onclick=()=>{
+  strip.toBlob(b=>{
+    const a=document.createElement("a");
+    a.href=URL.createObjectURL(b);
+    a.download="TOMOPHOTO.png";
     a.click();
-    URL.revokeObjectURL(a.href);
   });
 };
-
-resetBtn.onclick = ()=>location.reload();
 
 function sleep(ms){return new Promise(r=>setTimeout(r,ms))}
 </script>
