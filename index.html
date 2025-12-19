@@ -3,105 +3,150 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>TOMOPHOTO – Beach Booth</title>
+<title>TOMOPHOTO – Beach Photobooth</title>
+
+<!-- ======================================================
+FONT
+====================================================== -->
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@200;300;400&display=swap" rel="stylesheet">
 
 <style>
-/* ===================================================
-   THEME – MUJI BEACH
-=================================================== */
-:root{
-    --cream:#f7f4ef;
-    --sand:#e8dfd3;
-    --brown:#8a6f5a;
-    --brown-soft:#b8a89a;
-    --ink:#2a2a2a;
-    --line:#e2dbd2;
-}
-
-/* ===================================================
-   RESET + FONT (THIN)
-=================================================== */
+/* ======================================================
+RESET
+====================================================== */
 *{
     margin:0;
     padding:0;
     box-sizing:border-box;
-    font-family:
-      "SF Pro Display",
-      "Helvetica Neue",
-      "Inter",
-      system-ui,
-      sans-serif;
-    font-weight:300;
     user-select:none;
 }
-
+html,body{
+    width:100%;
+    height:100%;
+}
 body{
-    width:100vw;
-    height:100vh;
+    font-family:'Inter','Helvetica Neue',system-ui;
     background:#111;
     overflow:hidden;
 }
 
-/* ===================================================
-   SCREENS
-=================================================== */
+/* ======================================================
+THEME (MUJI / BEACH)
+====================================================== */
+:root{
+    --cream:#f7f4ef;
+    --sand:#efe6da;
+    --brown:#8a6f5a;
+    --brown-soft:#b9a89a;
+    --ink:#2a2a2a;
+    --line:#e2dad1;
+    --shadow:rgba(0,0,0,.15);
+}
+
+/* ======================================================
+SCREEN BASE
+====================================================== */
 .screen{
     position:absolute;
     inset:0;
-    background:var(--cream);
     display:none;
+    background:var(--cream);
 }
-.screen.active{ display:flex; }
+.screen.active{
+    display:flex;
+}
 
-/* ===================================================
-   IDLE
-=================================================== */
+/* ======================================================
+IDLE SCREEN
+====================================================== */
 #idle{
+    flex-direction:column;
     align-items:center;
     justify-content:center;
-    flex-direction:column;
     gap:22px;
 }
 #idle h1{
+    font-weight:300;
+    font-size:46px;
     letter-spacing:12px;
-    font-size:44px;
+    color:var(--ink);
 }
 #idle p{
     opacity:.6;
 }
-#idle .wave{
-    width:140px;
-    height:140px;
+#idle .touch{
+    width:160px;
+    height:160px;
     border-radius:50%;
     border:2px solid var(--brown);
     display:flex;
     align-items:center;
     justify-content:center;
+    font-size:14px;
+    letter-spacing:2px;
     animation:pulse 3s infinite;
 }
 @keyframes pulse{
-    0%{ box-shadow:0 0 0 0 rgba(138,111,90,.3);}
-    70%{ box-shadow:0 0 0 25px rgba(138,111,90,0);}
+    0%{box-shadow:0 0 0 0 rgba(138,111,90,.35)}
+    70%{box-shadow:0 0 0 40px rgba(138,111,90,0)}
 }
 
-/* ===================================================
-   BOOTH
-=================================================== */
+/* ======================================================
+SELECT BASE
+====================================================== */
+.select{
+    flex-direction:column;
+    align-items:center;
+    justify-content:center;
+    gap:32px;
+}
+.select h2{
+    font-weight:300;
+    letter-spacing:6px;
+}
+.select .options{
+    display:flex;
+    gap:26px;
+}
+.option{
+    width:140px;
+    height:180px;
+    border-radius:22px;
+    border:1px solid var(--brown-soft);
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    font-size:38px;
+    transition:.25s;
+    background:rgba(255,255,255,.6);
+}
+.option small{
+    font-size:12px;
+    letter-spacing:2px;
+}
+.option:hover{
+    transform:translateY(-6px);
+}
+.option.active{
+    border:2px solid var(--brown);
+}
+
+/* ======================================================
+BOOTH LAYOUT
+====================================================== */
 #booth{
     flex-direction:column;
 }
-
-/* HEADER */
 .header{
     height:64px;
-    padding:0 28px;
     display:flex;
-    justify-content:space-between;
     align-items:center;
+    justify-content:space-between;
+    padding:0 28px;
     border-bottom:1px solid var(--line);
 }
 .header h1{
-    font-size:20px;
+    font-weight:300;
     letter-spacing:6px;
 }
 .header span{
@@ -109,19 +154,23 @@ body{
     opacity:.6;
 }
 
-/* MAIN */
+/* ======================================================
+MAIN AREA
+====================================================== */
 .main{
     flex:1;
     display:grid;
-    grid-template-columns:1.2fr 1fr;
+    grid-template-columns:1.25fr 1fr;
     gap:22px;
     padding:22px 28px;
 }
 
-/* CAMERA */
+/* ======================================================
+CAMERA
+====================================================== */
 .camera{
     background:#000;
-    border-radius:20px;
+    border-radius:22px;
     overflow:hidden;
     position:relative;
 }
@@ -129,51 +178,50 @@ video{
     width:100%;
     height:100%;
     object-fit:cover;
+    filter:var(--filter,none);
 }
-
-/* warm overlay */
 .camera::after{
     content:"";
     position:absolute;
     inset:0;
     background:radial-gradient(circle at top,
-        rgba(255,230,200,.15),
+        rgba(255,230,200,.18),
         rgba(0,0,0,0));
     pointer-events:none;
 }
-
 .flash{
     position:absolute;
     inset:0;
-    background:white;
+    background:#fff;
     opacity:0;
+    pointer-events:none;
 }
-
 .countdown{
     position:absolute;
     inset:0;
     display:none;
     align-items:center;
     justify-content:center;
-    font-size:150px;
+    font-size:160px;
     color:white;
-    background:rgba(0,0,0,.4);
+    background:rgba(0,0,0,.45);
 }
 
-/* SIDE */
+/* ======================================================
+SIDE PANEL
+====================================================== */
 .side{
     display:flex;
     flex-direction:column;
     justify-content:space-between;
 }
-
 .state{
     border:1px solid var(--line);
-    border-radius:18px;
+    border-radius:22px;
     padding:18px;
 }
-.state h2{
-    font-size:18px;
+.state h3{
+    font-weight:300;
     letter-spacing:4px;
 }
 .state p{
@@ -186,65 +234,123 @@ video{
     margin-top:10px;
 }
 
-/* PREVIEW */
+/* ======================================================
+PREVIEW GRID
+====================================================== */
 .preview{
-    display:flex;
-    gap:10px;
     margin-top:16px;
+    display:grid;
+    grid-template-columns:repeat(3,1fr);
+    gap:10px;
 }
-.preview div{
-    flex:1;
+.preview .slot{
     aspect-ratio:3/4;
     background:var(--sand);
-    border-radius:14px;
+    border-radius:16px;
     padding:6px;
 }
 .preview img{
     width:100%;
     height:100%;
     object-fit:cover;
-    border-radius:10px;
+    border-radius:12px;
 }
 
-/* CONTROLS */
+/* ======================================================
+BUTTONS
+====================================================== */
 .controls{
     display:flex;
     justify-content:space-around;
     align-items:center;
 }
 .btn{
-    width:78px;
-    height:78px;
+    width:82px;
+    height:82px;
     border-radius:50%;
-    border:1px solid var(--line);
     background:white;
+    border:1px solid var(--brown-soft);
     font-size:11px;
+    letter-spacing:1px;
     transition:.2s;
 }
 .btn:active{
-    transform:scale(.95);
+    transform:scale(.94);
 }
 .btn.main{
-    border:2px solid var(--brown);
-    box-shadow:0 0 0 7px rgba(138,111,90,.2);
+    border:3px solid var(--brown);
+    box-shadow:
+        0 0 0 10px rgba(138,111,90,.25),
+        inset 0 0 0 6px rgba(255,255,255,.6);
 }
-.btn:disabled{ opacity:.3; }
+.btn:disabled{
+    opacity:.3;
+}
 
-/* CANVAS */
-canvas{ display:none; }
+/* ======================================================
+RESULT
+====================================================== */
+#result{
+    flex-direction:column;
+    align-items:center;
+    justify-content:center;
+    gap:22px;
+}
+.frame{
+    background:white;
+    padding:22px;
+    border-radius:26px;
+    box-shadow:0 20px 50px rgba(0,0,0,.25);
+}
+
+/* ======================================================
+CANVAS
+====================================================== */
+canvas{
+    display:none;
+}
 </style>
 </head>
 
 <body>
 
-<!-- IDLE -->
+<!-- ======================================================
+IDLE
+====================================================== -->
 <div class="screen active" id="idle">
     <h1>TOMOPHOTO</h1>
     <p>Beach Photo Booth</p>
-    <div class="wave" id="enter">START</div>
+    <div class="touch" id="enter">TOUCH</div>
 </div>
 
-<!-- BOOTH -->
+<!-- ======================================================
+SELECT COUNT
+====================================================== -->
+<div class="screen select" id="selectCount">
+    <h2>SELECT PHOTOS</h2>
+    <div class="options">
+        <div class="option" data-count="2">2<br><small>MINI</small></div>
+        <div class="option active" data-count="4">4<br><small>STANDARD</small></div>
+        <div class="option" data-count="6">6<br><small>JAPAN</small></div>
+    </div>
+</div>
+
+<!-- ======================================================
+SELECT FILTER
+====================================================== -->
+<div class="screen select" id="selectFilter">
+    <h2>SELECT FILTER</h2>
+    <div class="options">
+        <div class="option active" data-filter="none">CLEAN</div>
+        <div class="option" data-filter="brightness(1.08) saturate(1.1)">BEACH</div>
+        <div class="option" data-filter="sepia(.28)">FILM</div>
+        <div class="option" data-filter="contrast(1.1) saturate(1.2)">SUNSET</div>
+    </div>
+</div>
+
+<!-- ======================================================
+BOOTH
+====================================================== -->
 <div class="screen" id="booth">
     <div class="header">
         <h1>TOMOPHOTO</h1>
@@ -260,188 +366,194 @@ canvas{ display:none; }
 
         <div class="side">
             <div class="state">
-                <h2 id="state">READY</h2>
+                <h3 id="state">READY</h3>
                 <p id="hint">Stand in the frame</p>
                 <div class="step" id="step">—</div>
 
-                <div class="preview">
-                    <div><img id="p1"></div>
-                    <div><img id="p2"></div>
-                    <div><img id="p3"></div>
-                </div>
+                <div class="preview" id="preview"></div>
             </div>
 
             <div class="controls">
                 <button class="btn main" id="shoot">SHOT</button>
-                <button class="btn" id="img" disabled>IMAGE</button>
-                <button class="btn" id="vid" disabled>VIDEO</button>
+                <button class="btn" id="saveImg" disabled>IMAGE</button>
+                <button class="btn" id="saveVid" disabled>VIDEO</button>
                 <button class="btn" id="reset" disabled>RESET</button>
             </div>
         </div>
     </div>
 </div>
 
-<canvas id="strip"></canvas>
+<!-- ======================================================
+RESULT
+====================================================== -->
+<div class="screen" id="result">
+    <div class="frame">
+        <canvas id="strip"></canvas>
+    </div>
+    <button class="btn" onclick="location.reload()">RESTART</button>
+</div>
+
 <canvas id="videoCanvas"></canvas>
 
 <script>
-/* ===== BASIC ===== */
+/* ======================================================
+STATE
+====================================================== */
+let photoCount = 4;
+let filter = "none";
+let shots = [];
+
 const idle = document.getElementById("idle");
+const selectCount = document.getElementById("selectCount");
+const selectFilter = document.getElementById("selectFilter");
 const booth = document.getElementById("booth");
+const result = document.getElementById("result");
+
 const video = document.getElementById("video");
-const flash = document.getElementById("flash");
-const countdown = document.getElementById("countdown");
+const preview = document.getElementById("preview");
+const strip = document.getElementById("strip");
+const ctx = strip.getContext("2d");
 
-const previews=[p1,p2,p3];
-const strip=document.getElementById("strip");
-const sctx=strip.getContext("2d");
-
-const vCanvas=document.getElementById("videoCanvas");
-const vctx=vCanvas.getContext("2d");
-
-const shootBtn=shoot;
-const imgBtn=img;
-const vidBtn=vid;
-const resetBtn=reset;
-
-let shots=[];
-
-/* CAMERA */
+/* ======================================================
+CAMERA
+====================================================== */
 navigator.mediaDevices.getUserMedia({video:{facingMode:"user"}})
 .then(s=>video.srcObject=s);
 
+/* ======================================================
+FLOW
+====================================================== */
 enter.onclick=()=>{
     idle.classList.remove("active");
-    booth.classList.add("active");
+    selectCount.classList.add("active");
 };
 
-/* UTIL */
-const sleep=ms=>new Promise(r=>setTimeout(r,ms));
+document.querySelectorAll("[data-count]").forEach(el=>{
+    el.onclick=()=>{
+        document.querySelectorAll("[data-count]").forEach(x=>x.classList.remove("active"));
+        el.classList.add("active");
+        photoCount = +el.dataset.count;
+        selectCount.classList.remove("active");
+        selectFilter.classList.add("active");
+    };
+});
 
-/* SHOOT */
-shootBtn.onclick=async()=>{
+document.querySelectorAll("[data-filter]").forEach(el=>{
+    el.onclick=()=>{
+        document.querySelectorAll("[data-filter]").forEach(x=>x.classList.remove("active"));
+        el.classList.add("active");
+        filter = el.dataset.filter;
+        video.style.filter = filter;
+        selectFilter.classList.remove("active");
+        booth.classList.add("active");
+        buildPreview();
+    };
+});
+
+/* ======================================================
+PREVIEW
+====================================================== */
+function buildPreview(){
+    preview.innerHTML="";
+    const cols = photoCount>=4?3:photoCount;
+    preview.style.gridTemplateColumns = `repeat(${cols},1fr)`;
+    for(let i=0;i<photoCount;i++){
+        preview.innerHTML+=`<div class="slot"><img></div>`;
+    }
+}
+
+/* ======================================================
+SHOOT
+====================================================== */
+shoot.onclick=async()=>{
     shots=[];
-    previews.forEach(p=>p.src="");
-    imgBtn.disabled=true;
-    vidBtn.disabled=true;
-    resetBtn.disabled=true;
+    const imgs=[...preview.querySelectorAll("img")];
+    saveImg.disabled=true;
+    saveVid.disabled=true;
+    reset.disabled=true;
 
-    for(let i=0;i<3;i++){
-        countdown.style.display="flex";
-        for(let n=3;n>0;n--){
-            countdown.textContent=n;
-            await sleep(1000);
-        }
-        countdown.style.display="none";
+    for(let i=0;i<photoCount;i++){
+        await countdownAnim();
         flash.style.opacity=1;
-        await sleep(100);
+        await sleep(120);
         flash.style.opacity=0;
 
         const c=document.createElement("canvas");
         c.width=video.videoWidth;
         c.height=video.videoHeight;
         c.getContext("2d").drawImage(video,0,0);
-        shots.push(c.toDataURL("image/png"));
-        previews[i].src=shots[i];
-        await sleep(600);
+        shots.push(c);
+        imgs[i].src=c.toDataURL("image/png");
+        await sleep(500);
     }
-
     buildStrip();
-    imgBtn.disabled=false;
-    vidBtn.disabled=false;
-    resetBtn.disabled=false;
+    saveImg.disabled=false;
+    saveVid.disabled=false;
+    reset.disabled=false;
 };
 
-/* STRIP */
-function buildStrip(){
-    const img=new Image();
-    img.src=shots[0];
-    img.onload=()=>{
-        const w=img.width;
-        const h=img.height;
-        const pad=26;
-        const head=120;
-
-        strip.width=w+pad*2;
-        strip.height=head+h*3+pad*4;
-
-        sctx.fillStyle="#fff";
-        sctx.fillRect(0,0,strip.width,strip.height);
-        sctx.fillStyle="#2a2a2a";
-        sctx.font="300 36px SF Pro Display";
-        sctx.textAlign="center";
-        sctx.fillText("TOMOPHOTO",strip.width/2,70);
-        sctx.font="300 14px SF Pro Display";
-        sctx.fillText(new Date().toLocaleDateString(),strip.width/2,100);
-
-        shots.forEach((src,i)=>{
-            const im=new Image();
-            im.onload=()=>{
-                const y=head+pad+i*(h+pad);
-                sctx.strokeStyle="#8a6f5a";
-                sctx.lineWidth=1;
-                sctx.strokeRect(pad-4,y-4,w+8,h+8);
-                sctx.drawImage(im,pad,y,w,h);
-            };
-            im.src=src;
-        });
-    };
+/* ======================================================
+COUNTDOWN
+====================================================== */
+async function countdownAnim(){
+    countdown.style.display="flex";
+    for(let i=3;i>0;i--){
+        countdown.textContent=i;
+        await sleep(1000);
+    }
+    countdown.style.display="none";
 }
 
-/* IMAGE */
-imgBtn.onclick=()=>{
+/* ======================================================
+STRIP
+====================================================== */
+function buildStrip(){
+    const w = shots[0].width;
+    const h = shots[0].height;
+    const pad = 28;
+    const head = 120;
+
+    strip.width = w + pad*2;
+    strip.height = head + h*photoCount + pad*(photoCount+1);
+
+    ctx.fillStyle="#fff";
+    ctx.fillRect(0,0,strip.width,strip.height);
+
+    ctx.fillStyle="#2a2a2a";
+    ctx.textAlign="center";
+    ctx.font="300 36px Inter";
+    ctx.fillText("TOMOPHOTO",strip.width/2,60);
+    ctx.font="300 14px Inter";
+    ctx.fillText(new Date().toLocaleDateString(),strip.width/2,90);
+
+    shots.forEach((c,i)=>{
+        const y = head + pad + i*(h+pad);
+        ctx.strokeStyle="#8a6f5a";
+        ctx.lineWidth=1;
+        ctx.strokeRect(pad-4,y-4,w+8,h+8);
+        ctx.drawImage(c,pad,y,w,h);
+    });
+
+    booth.classList.remove("active");
+    result.classList.add("active");
+}
+
+/* ======================================================
+SAVE IMAGE
+====================================================== */
+saveImg.onclick=()=>{
     const a=document.createElement("a");
     a.href=strip.toDataURL("image/png");
     a.download="TOMOPHOTO.png";
     a.click();
 };
 
-/* VIDEO – slideshow */
-vidBtn.onclick=async()=>{
-    const imgs=[];
-    for(const src of shots){
-        const i=new Image();
-        i.src=src;
-        await i.decode();
-        imgs.push(i);
-    }
-
-    vCanvas.width=imgs[0].width;
-    vCanvas.height=imgs[0].height;
-
-    const stream=vCanvas.captureStream(30);
-    let rec;
-    try{
-        rec=new MediaRecorder(stream,{mimeType:"video/mp4"});
-    }catch{
-        rec=new MediaRecorder(stream,{mimeType:"video/webm"});
-    }
-    const chunks=[];
-    rec.ondataavailable=e=>chunks.push(e.data);
-    rec.start();
-
-    for(const im of imgs){
-        vctx.clearRect(0,0,vCanvas.width,vCanvas.height);
-        vctx.globalAlpha=0;
-        for(let a=0;a<=1;a+=0.05){
-            vctx.globalAlpha=a;
-            vctx.drawImage(im,0,0);
-            await sleep(50);
-        }
-        await sleep(1500);
-    }
-
-    rec.stop();
-    rec.onstop=()=>{
-        const blob=new Blob(chunks,{type:rec.mimeType});
-        const a=document.createElement("a");
-        a.href=URL.createObjectURL(blob);
-        a.download=rec.mimeType.includes("mp4")?"TOMOPHOTO.mp4":"TOMOPHOTO.webm";
-        a.click();
-    };
-};
-
-resetBtn.onclick=()=>location.reload();
+/* ======================================================
+UTIL
+====================================================== */
+function sleep(ms){
+    return new Promise(r=>setTimeout(r,ms));
+}
 </script>
 
 </body>
