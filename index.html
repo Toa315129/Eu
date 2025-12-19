@@ -3,140 +3,176 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Tomoji Studio Booth</title>
+<title>TOMOPHOTO BOOTH</title>
 
 <style>
-*{box-sizing:border-box}
 body{
   margin:0;
-  background:#f6f1e9;
   font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;
+  background:#f3ece5;
+  color:#5b3a29;
   display:flex;
   justify-content:center;
   align-items:center;
-  height:100vh;
+  min-height:100vh;
 }
 
-.app{
-  width:1024px;
-  height:600px;
+.container{
   background:#fff;
-  border-radius:24px;
-  box-shadow:0 20px 50px rgba(0,0,0,.15);
-  display:flex;
-  overflow:hidden;
+  padding:20px;
+  border-radius:16px;
+  width:100%;
+  max-width:420px;
+  box-shadow:0 12px 30px rgba(0,0,0,.15);
+  text-align:center;
 }
 
-.left{
-  flex:1;
-  background:#000;
+h1{
+  letter-spacing:2px;
+  margin-bottom:12px;
+}
+
+.video-wrap{
   position:relative;
 }
+
 video{
   width:100%;
-  height:100%;
-  object-fit:cover;
-}
-
-.logo{
-  position:absolute;
-  top:16px;
-  left:16px;
-  width:90px;
-  opacity:.9;
+  border-radius:14px;
+  border:4px solid #5b3a29;
 }
 
 .countdown{
   position:absolute;
   inset:0;
-  display:flex;
+  display:none;
   justify-content:center;
   align-items:center;
-  font-size:120px;
+  font-size:96px;
+  font-weight:bold;
   color:#fff;
   background:rgba(0,0,0,.4);
-  display:none;
+  border-radius:14px;
 }
 
-.right{
-  width:340px;
-  padding:24px;
-  background:#faf7f2;
-  display:flex;
-  flex-direction:column;
-  justify-content:space-between;
-}
-
-.frame{
-  background:#fff;
-  border-radius:16px;
-  padding:12px;
-  box-shadow:inset 0 0 0 2px #e5dccd;
-}
-
-.frame canvas{
-  width:100%;
-  border-radius:12px;
+.buttons{
+  margin-top:12px;
 }
 
 button{
-  width:100%;
-  height:64px;
-  font-size:20px;
-  border:none;
-  border-radius:40px;
-  background:#7a5c3c;
+  padding:10px 18px;
+  margin:6px;
+  background:#8c6b4e;
   color:#fff;
+  border:none;
+  border-radius:999px;
+  font-size:16px;
   cursor:pointer;
 }
 
 button:disabled{
   opacity:.5;
 }
+
+#shots{
+  margin-top:16px;
+}
+
+.shot-list{
+  display:flex;
+  justify-content:center;
+  gap:8px;
+  margin-bottom:12px;
+}
+
+.shot-list img{
+  width:80px;
+  border-radius:8px;
+  border:3px solid #5b3a29;
+  background:#eee;
+}
+
+a#downloadBtn{
+  display:inline-block;
+  padding:10px 20px;
+  background:#6f533f;
+  color:#fff;
+  text-decoration:none;
+  border-radius:999px;
+  pointer-events:none;
+  opacity:.4;
+}
 </style>
 </head>
 
 <body>
-<div class="app">
 
-  <div class="left">
+<div class="container">
+  <h1>TOMOPHOTO</h1>
+
+  <div class="video-wrap">
     <video id="video" autoplay playsinline></video>
-    <img src="logo.png" class="logo">
     <div class="countdown" id="countdown">3</div>
   </div>
 
-  <div class="right">
-    <div class="frame">
-      <canvas id="result" width="600" height="900"></canvas>
-    </div>
+  <canvas id="canvas" hidden></canvas>
+  <canvas id="finalCanvas" hidden></canvas>
 
-    <div>
-      <button id="shoot">ถ่ายรูป</button>
-      <br><br>
-      <button id="download" disabled>ดาวน์โหลด</button>
-    </div>
+  <div class="buttons">
+    <button id="switchBtn">สลับกล้อง</button>
+    <button id="takeBtn">ถ่ายรูป</button>
   </div>
 
+  <div id="shots">
+    <div class="shot-list">
+      <img id="shot1">
+      <img id="shot2">
+      <img id="shot3">
+    </div>
+    <a id="downloadBtn" download="TOMOPHOTO.png">ดาวน์โหลดรูป</a>
+  </div>
 </div>
 
 <script>
 const video = document.getElementById("video");
-const shootBtn = document.getElementById("shoot");
-const downloadBtn = document.getElementById("download");
+const canvas = document.getElementById("canvas");
+const finalCanvas = document.getElementById("finalCanvas");
 const countdownEl = document.getElementById("countdown");
-const canvas = document.getElementById("result");
-const ctx = canvas.getContext("2d");
+const switchBtn = document.getElementById("switchBtn");
+const takeBtn = document.getElementById("takeBtn");
+const downloadBtn = document.getElementById("downloadBtn");
 
-let shots = [];
+const shotsEl = [
+  document.getElementById("shot1"),
+  document.getElementById("shot2"),
+  document.getElementById("shot3")
+];
 
-navigator.mediaDevices.getUserMedia({video:true})
-.then(stream=>video.srcObject=stream);
+let devices=[], currentCamera=0, stream=null;
+let shotsData=[];
+
+async function startCamera(){
+  devices = (await navigator.mediaDevices.enumerateDevices())
+    .filter(d=>d.kind==="videoinput");
+
+  if(!devices.length){ alert("ไม่พบกล้อง"); return; }
+
+  const deviceId = devices[currentCamera].deviceId;
+  stream = await navigator.mediaDevices.getUserMedia({video:{deviceId}});
+  video.srcObject = stream;
+}
+
+switchBtn.onclick = async ()=>{
+  currentCamera = (currentCamera+1)%devices.length;
+  if(stream) stream.getTracks().forEach(t=>t.stop());
+  await startCamera();
+};
 
 function countdown(){
   return new Promise(res=>{
     let n=3;
-    countdownEl.style.display="flex";
     countdownEl.textContent=n;
+    countdownEl.style.display="flex";
     const i=setInterval(()=>{
       n--;
       if(n===0){
@@ -150,45 +186,60 @@ function countdown(){
   });
 }
 
-shootBtn.onclick = async ()=>{
-  shootBtn.disabled=true;
-  shots=[];
+takeBtn.onclick = async ()=>{
+  takeBtn.disabled=true;
+  shotsData=[];
 
   for(let i=0;i<3;i++){
     await countdown();
-    const temp=document.createElement("canvas");
-    temp.width=600;
-    temp.height=450;
-    temp.getContext("2d").drawImage(video,0,0,600,450);
-    shots.push(temp);
+    snap(i);
     await new Promise(r=>setTimeout(r,300));
   }
 
-  drawResult();
-  downloadBtn.disabled=false;
-  shootBtn.disabled=false;
+  buildFinal();
+  takeBtn.disabled=false;
 };
 
-function drawResult(){
+function snap(i){
+  const ctx = canvas.getContext("2d");
+  canvas.width = video.videoWidth;
+  canvas.height = video.videoHeight;
+  ctx.drawImage(video,0,0);
+  const img = canvas.toDataURL("image/png");
+  shotsEl[i].src = img;
+  shotsData.push(img);
+}
+
+function buildFinal(){
+  const ctx = finalCanvas.getContext("2d");
+  finalCanvas.width = 600;
+  finalCanvas.height = 900;
+
   ctx.fillStyle="#fff";
   ctx.fillRect(0,0,600,900);
 
-  shots.forEach((c,i)=>{
-    ctx.drawImage(c,40,40+i*280,520,240);
+  shotsData.forEach((src,i)=>{
+    const img = new Image();
+    img.onload=()=>{
+      ctx.drawImage(img,50,50+i*260,500,220);
+    };
+    img.src=src;
   });
 
-  ctx.fillStyle="#7a5c3c";
+  ctx.fillStyle="#5b3a29";
   ctx.font="24px sans-serif";
   ctx.textAlign="center";
-  ctx.fillText("Tomoji Studio",300,860);
+  ctx.fillText("TOMOPHOTO",300,860);
+
+  setTimeout(()=>{
+    downloadBtn.href = finalCanvas.toDataURL("image/png");
+    downloadBtn.style.pointerEvents="auto";
+    downloadBtn.style.opacity="1";
+  },500);
 }
 
-downloadBtn.onclick=()=>{
-  const a=document.createElement("a");
-  a.download="tomoji-photo.png";
-  a.href=canvas.toDataURL("image/png");
-  a.click();
-};
+startCamera();
 </script>
+
 </body>
 </html>
