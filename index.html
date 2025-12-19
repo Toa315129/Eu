@@ -3,105 +3,141 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>TOMOPHOTO | Mall Booth</title>
+<title>TOMOPHOTO KIOSK</title>
 
 <style>
 :root{
-    --dark:#2a1a12;
-    --brown:#5b3a29;
-    --brown-soft:#8c6b4e;
-    --cream:#f4eee8;
-    --frame:#d8c6b8;
+    --bg:#f6f4f1;
+    --ink:#222;
+    --soft:#b9afa6;
+    --line:#e1dbd4;
+    --accent:#8d7a6a;
 }
 
-/* ===== GLOBAL FONT (ROUNDED) ===== */
+/* ===== RESET & FONT ===== */
 *{
-    box-sizing:border-box;
     margin:0;
     padding:0;
+    box-sizing:border-box;
     font-family:
-        "SF Pro Rounded",
-        "Arial Rounded MT Bold",
-        "Arial Rounded MT",
+        "SF Pro Display",
+        "Helvetica Neue",
+        "Inter",
         system-ui,
-        -apple-system,
         sans-serif;
-    user-select:none;
+    font-weight:300;
 }
 
 body{
-    background:var(--dark);
+    background:#000;
     width:100vw;
     height:100vh;
-    display:flex;
-    justify-content:center;
-    align-items:center;
+    overflow:hidden;
 }
 
-/* ===== BOOTH ===== */
-.booth{
-    width:520px;                 /* iPad friendly */
-    max-width:92vw;
-    height:92vh;
-    background:var(--cream);
-    border-radius:28px;
-    padding:22px;
-    box-shadow:0 30px 70px rgba(0,0,0,.6);
+/* ===== KIOSK ===== */
+.kiosk{
+    width:100%;
+    height:100%;
+    background:var(--bg);
     display:flex;
     flex-direction:column;
-    justify-content:space-between;
-    color:var(--brown);
 }
 
 /* ===== HEADER ===== */
 .header{
-    text-align:center;
+    padding:24px 40px;
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
 }
 .header h1{
+    letter-spacing:6px;
     font-size:26px;
-    letter-spacing:5px;
 }
-.header p{
+.header span{
     font-size:12px;
     opacity:.6;
 }
 
+/* ===== MAIN ===== */
+.main{
+    flex:1;
+    display:grid;
+    grid-template-columns: 1.4fr 1fr;
+    gap:32px;
+    padding:0 40px 40px;
+}
+
 /* ===== CAMERA ===== */
-.camera-box{
+.camera{
     position:relative;
-    border:6px solid var(--brown);
-    border-radius:22px;
+    background:#000;
+    border-radius:28px;
     overflow:hidden;
 }
 video{
     width:100%;
-    display:block;
+    height:100%;
+    object-fit:cover;
 }
+.flash{
+    position:absolute;
+    inset:0;
+    background:white;
+    opacity:0;
+    pointer-events:none;
+}
+
+/* COUNTDOWN */
 .countdown{
     position:absolute;
     inset:0;
     display:none;
-    align-items:center;
     justify-content:center;
-    font-size:160px;
-    font-weight:800;
-    color:#fff;
+    align-items:center;
+    font-size:200px;
+    color:white;
     background:rgba(0,0,0,.35);
-    text-shadow:0 0 25px black;
 }
 
-/* ===== PREVIEW ===== */
-.preview-row{
+/* ===== SIDE PANEL ===== */
+.side{
     display:flex;
+    flex-direction:column;
     justify-content:space-between;
-    margin-top:10px;
 }
+
+.state{
+    border:1px solid var(--line);
+    border-radius:22px;
+    padding:24px;
+}
+.state h2{
+    font-size:22px;
+    letter-spacing:4px;
+}
+.state p{
+    margin-top:8px;
+    font-size:14px;
+    opacity:.6;
+}
+.step{
+    margin-top:20px;
+    font-size:72px;
+}
+
+/* PREVIEW */
 .preview{
-    width:30%;
+    display:flex;
+    gap:12px;
+    margin-top:20px;
+}
+.preview div{
+    flex:1;
     aspect-ratio:3/4;
-    background:#eee6df;
-    border-radius:14px;
-    border:3px solid var(--frame);
+    background:#eee;
+    border-radius:16px;
     overflow:hidden;
 }
 .preview img{
@@ -114,232 +150,138 @@ video{
 .controls{
     display:flex;
     justify-content:space-around;
-    gap:8px;
-    margin-top:14px;
+    align-items:center;
 }
 .btn{
-    width:80px;
-    height:80px;
+    width:100px;
+    height:100px;
     border-radius:50%;
-    border:none;
-    background:radial-gradient(circle at top,#b2957a,var(--brown-soft));
-    color:white;
-    font-size:11px;
-    cursor:pointer;
+    border:1px solid var(--line);
+    background:white;
+    font-size:12px;
+}
+.btn.main{
+    border:2px solid var(--accent);
+    box-shadow:0 0 0 10px rgba(141,122,106,.15);
 }
 .btn:disabled{
-    opacity:.35;
-}
-
-/* ===== RESULT ===== */
-.result{
-    display:flex;
-    justify-content:center;
-}
-canvas{
-    width:100%;
-    border-radius:18px;
-    border:5px solid var(--brown);
-    display:none;
-    background:#fff;
-}
-
-/* ===== FOOTER ===== */
-.footer{
-    text-align:center;
-    font-size:11px;
-    opacity:.6;
+    opacity:.3;
 }
 </style>
 </head>
 
 <body>
 
-<div class="booth">
+<div class="kiosk">
 
     <div class="header">
         <h1>TOMOPHOTO</h1>
-        <p>MALL PHOTO BOOTH</p>
+        <span id="clock">READY</span>
     </div>
 
-    <div class="camera-box">
-        <video id="video" autoplay playsinline></video>
-        <div class="countdown" id="countdown">3</div>
-    </div>
+    <div class="main">
 
-    <!-- PREVIEW -->
-    <div class="preview-row">
-        <div class="preview"><img id="p1"></div>
-        <div class="preview"><img id="p2"></div>
-        <div class="preview"><img id="p3"></div>
-    </div>
+        <!-- CAMERA -->
+        <div class="camera">
+            <video id="video" autoplay playsinline></video>
+            <div class="flash" id="flash"></div>
+            <div class="countdown" id="countdown">3</div>
+        </div>
 
-    <!-- CONTROLS -->
-    <div class="controls">
-        <button class="btn" id="startBtn">●<br>START</button>
-        <button class="btn" id="saveBtn" disabled>⬇<br>IMAGE</button>
-        <button class="btn" id="videoBtn" disabled>🎞<br>VIDEO</button>
-        <button class="btn" id="resetBtn" disabled>↺<br>RESET</button>
-    </div>
+        <!-- SIDE -->
+        <div class="side">
+            <div class="state">
+                <h2 id="state">TOUCH TO START</h2>
+                <p id="hint">Place yourself in the frame</p>
+                <div class="step" id="step">—</div>
 
-    <!-- RESULT -->
-    <div class="result">
-        <canvas id="strip"></canvas>
-    </div>
+                <div class="preview">
+                    <div><img id="p1"></div>
+                    <div><img id="p2"></div>
+                    <div><img id="p3"></div>
+                </div>
+            </div>
 
-    <div class="footer">© TOMOPHOTO</div>
+            <div class="controls">
+                <button class="btn main" id="start">START</button>
+                <button class="btn" id="img" disabled>IMAGE</button>
+                <button class="btn" id="vid" disabled>VIDEO</button>
+                <button class="btn" id="reset" disabled>RESET</button>
+            </div>
+        </div>
+
+    </div>
 </div>
 
 <script>
 const video = document.getElementById("video");
-const countdownEl = document.getElementById("countdown");
-const startBtn = document.getElementById("startBtn");
-const saveBtn = document.getElementById("saveBtn");
-const videoBtn = document.getElementById("videoBtn");
-const resetBtn = document.getElementById("resetBtn");
-const strip = document.getElementById("strip");
+const countdown = document.getElementById("countdown");
+const flash = document.getElementById("flash");
 
-const previews = [
+const stateEl = document.getElementById("state");
+const stepEl = document.getElementById("step");
+
+const previews=[
     document.getElementById("p1"),
     document.getElementById("p2"),
     document.getElementById("p3")
 ];
 
-const stripCtx = strip.getContext("2d");
-const tempCanvas = document.createElement("canvas");
-const tempCtx = tempCanvas.getContext("2d");
+const startBtn=document.getElementById("start");
+const imgBtn=document.getElementById("img");
+const vidBtn=document.getElementById("vid");
+const resetBtn=document.getElementById("reset");
 
-let photos = [];
-const TOTAL = 3;
+const canvas=document.createElement("canvas");
+const ctx=canvas.getContext("2d");
+
+let shots=[];
 
 /* CAMERA */
-navigator.mediaDevices.getUserMedia({ video:{ facingMode:"user" } })
-.then(stream => video.srcObject = stream);
+navigator.mediaDevices.getUserMedia({video:{facingMode:"user"}})
+.then(s=>video.srcObject=s);
 
 /* UTIL */
-const sleep = ms => new Promise(r=>setTimeout(r,ms));
+const sleep=ms=>new Promise(r=>setTimeout(r,ms));
 
-async function runCountdown(){
-    countdownEl.style.display="flex";
-    for(let i=3;i>0;i--){
-        countdownEl.textContent=i;
-        await sleep(1000);
-    }
-    countdownEl.style.display="none";
-}
-
-function capture(index){
-    tempCanvas.width = video.videoWidth;
-    tempCanvas.height = video.videoHeight;
-    tempCtx.drawImage(video,0,0);
-    const img = tempCanvas.toDataURL("image/png");
-    photos.push(img);
-    previews[index].src = img;
-}
-
-async function startBooth(){
-    photos = [];
+async function shoot(){
+    shots=[];
     previews.forEach(p=>p.src="");
-    strip.style.display="none";
+    stateEl.textContent="SHOOTING";
+    stepEl.textContent="";
 
-    startBtn.disabled = true;
-    saveBtn.disabled = true;
-    videoBtn.disabled = true;
-    resetBtn.disabled = true;
+    for(let i=0;i<3;i++){
+        stepEl.textContent=i+1;
+        countdown.style.display="flex";
 
-    for(let i=0;i<TOTAL;i++){
-        await runCountdown();
-        capture(i);
+        for(let n=3;n>0;n--){
+            countdown.textContent=n;
+            await sleep(1000);
+        }
+
+        countdown.style.display="none";
+        flash.style.opacity=1;
+        await sleep(100);
+        flash.style.opacity=0;
+
+        canvas.width=video.videoWidth;
+        canvas.height=video.videoHeight;
+        ctx.drawImage(video,0,0);
+
+        shots.push(canvas.toDataURL());
+        previews[i].src=shots[i];
         await sleep(500);
     }
 
-    buildStrip();
-    startBtn.disabled = false;
+    stateEl.textContent="DONE";
+    stepEl.textContent="✓";
+    imgBtn.disabled=false;
+    vidBtn.disabled=false;
+    resetBtn.disabled=false;
 }
 
-function buildStrip(){
-    const w = tempCanvas.width;
-    const h = tempCanvas.height;
-    const pad = 26;
-    const headerH = 140;
-
-    strip.width = w + pad*2;
-    strip.height = headerH + h*TOTAL + pad*(TOTAL+1);
-
-    stripCtx.fillStyle="#fff";
-    stripCtx.fillRect(0,0,strip.width,strip.height);
-
-    // HEADER (ROUNDED FONT)
-    stripCtx.fillStyle="#5b3a29";
-    stripCtx.font="bold 44px 'SF Pro Rounded','Arial Rounded MT',sans-serif";
-    stripCtx.textAlign="center";
-    stripCtx.fillText("TOMOPHOTO", strip.width/2, 90);
-
-    photos.forEach((src,i)=>{
-        const img = new Image();
-        img.onload = ()=>{
-            const y = headerH + pad + i*(h+pad);
-            stripCtx.fillStyle="#eee";
-            stripCtx.fillRect(pad-6,y-6,w+12,h+12);
-            stripCtx.drawImage(img,pad,y,w,h);
-
-            if(i === TOTAL-1){
-                strip.style.display="block";
-                saveBtn.disabled = false;
-                videoBtn.disabled = false;
-                resetBtn.disabled = false;
-            }
-        };
-        img.src = src;
-    });
-}
-
-/* IMAGE DOWNLOAD */
-saveBtn.onclick = ()=>{
-    const a = document.createElement("a");
-    a.download = "TOMOPHOTO.png";
-    a.href = strip.toDataURL("image/png");
-    a.click();
-};
-
-/* VIDEO GENERATION */
-videoBtn.onclick = async ()=>{
-    const stream = strip.captureStream(30);
-    const recorder = new MediaRecorder(stream,{ mimeType:"video/webm" });
-    let chunks = [];
-
-    recorder.ondataavailable = e => chunks.push(e.data);
-    recorder.start();
-
-    for(let i=0;i<photos.length;i++){
-        stripCtx.clearRect(0,0,strip.width,strip.height);
-        buildStrip();
-        await sleep(1000);
-    }
-
-    recorder.stop();
-
-    recorder.onstop = ()=>{
-        const blob = new Blob(chunks,{ type:"video/webm" });
-        const url = URL.createObjectURL(blob);
-        const a = document.createElement("a");
-        a.href = url;
-        a.download = "TOMOPHOTO.webm";
-        a.click();
-    };
-};
-
-/* RESET */
-resetBtn.onclick = ()=>{
-    photos = [];
-    previews.forEach(p=>p.src="");
-    strip.style.display="none";
-    saveBtn.disabled = true;
-    videoBtn.disabled = true;
-    resetBtn.disabled = true;
-};
-
-startBtn.onclick = startBooth;
+startBtn.onclick=shoot;
+resetBtn.onclick=()=>location.reload();
 </script>
 
 </body>
