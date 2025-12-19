@@ -3,557 +3,345 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>TOMOPHOTO – Beach Photobooth</title>
+<title>TOMOPHOTO</title>
 
-<!-- ======================================================
-FONT
-====================================================== -->
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@200;300;400&display=swap" rel="stylesheet">
 
 <style>
-/* ======================================================
-RESET
-====================================================== */
-*{
-    margin:0;
-    padding:0;
-    box-sizing:border-box;
-    user-select:none;
-}
-html,body{
-    width:100%;
-    height:100%;
-}
+/* ================= RESET ================= */
+*{margin:0;padding:0;box-sizing:border-box;user-select:none}
+html,body{width:100%;height:100%}
 body{
-    font-family:'Inter','Helvetica Neue',system-ui;
-    background:#111;
-    overflow:hidden;
+  font-family:'Inter','Helvetica Neue',system-ui;
+  background:#111;
+  overflow:hidden;
 }
 
-/* ======================================================
-THEME (MUJI / BEACH)
-====================================================== */
+/* ================= THEME ================= */
 :root{
-    --cream:#f7f4ef;
-    --sand:#efe6da;
-    --brown:#8a6f5a;
-    --brown-soft:#b9a89a;
-    --ink:#2a2a2a;
-    --line:#e2dad1;
-    --shadow:rgba(0,0,0,.15);
+  --cream:#f7f4ef;
+  --sand:#efe6da;
+  --brown:#8a6f5a;
+  --line:#e2dad1;
+  --ink:#2a2a2a;
 }
 
-/* ======================================================
-SCREEN BASE
-====================================================== */
+/* ================= SCREEN ================= */
 .screen{
-    position:absolute;
-    inset:0;
-    display:none;
-    background:var(--cream);
+  position:absolute;inset:0;
+  background:var(--cream);
+  display:none;
 }
-.screen.active{
-    display:flex;
-}
+.screen.active{display:flex}
 
-/* ======================================================
-IDLE SCREEN
-====================================================== */
+/* ================= IDLE ================= */
 #idle{
-    flex-direction:column;
-    align-items:center;
-    justify-content:center;
-    gap:22px;
+  flex-direction:column;
+  align-items:center;
+  justify-content:center;
+  gap:20px;
 }
 #idle h1{
-    font-weight:300;
-    font-size:46px;
-    letter-spacing:12px;
-    color:var(--ink);
+  font-weight:300;
+  letter-spacing:14px;
+  font-size:46px;
 }
-#idle p{
-    opacity:.6;
-}
+#idle p{opacity:.6}
 #idle .touch{
-    width:160px;
-    height:160px;
-    border-radius:50%;
-    border:2px solid var(--brown);
-    display:flex;
-    align-items:center;
-    justify-content:center;
-    font-size:14px;
-    letter-spacing:2px;
-    animation:pulse 3s infinite;
+  width:160px;height:160px;
+  border-radius:50%;
+  border:2px solid var(--brown);
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  animation:pulse 3s infinite;
 }
 @keyframes pulse{
-    0%{box-shadow:0 0 0 0 rgba(138,111,90,.35)}
-    70%{box-shadow:0 0 0 40px rgba(138,111,90,0)}
+  0%{box-shadow:0 0 0 0 rgba(138,111,90,.3)}
+  70%{box-shadow:0 0 0 40px rgba(138,111,90,0)}
 }
 
-/* ======================================================
-SELECT BASE
-====================================================== */
+/* ================= SELECT ================= */
 .select{
-    flex-direction:column;
-    align-items:center;
-    justify-content:center;
-    gap:32px;
+  flex-direction:column;
+  align-items:center;
+  justify-content:center;
+  gap:30px;
 }
-.select h2{
-    font-weight:300;
-    letter-spacing:6px;
-}
-.select .options{
-    display:flex;
-    gap:26px;
-}
+.select h2{letter-spacing:6px;font-weight:300}
+.options{display:flex;gap:24px}
 .option{
-    width:140px;
-    height:180px;
-    border-radius:22px;
-    border:1px solid var(--brown-soft);
-    display:flex;
-    align-items:center;
-    justify-content:center;
-    font-size:38px;
-    transition:.25s;
-    background:rgba(255,255,255,.6);
+  width:140px;height:180px;
+  border-radius:22px;
+  border:1px solid var(--line);
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  font-size:38px;
+  background:#fff;
 }
-.option small{
-    font-size:12px;
-    letter-spacing:2px;
-}
-.option:hover{
-    transform:translateY(-6px);
-}
-.option.active{
-    border:2px solid var(--brown);
-}
+.option.active{border:2px solid var(--brown)}
 
-/* ======================================================
-BOOTH LAYOUT
-====================================================== */
-#booth{
-    flex-direction:column;
-}
+/* ================= BOOTH ================= */
+#booth{flex-direction:column}
 .header{
-    height:64px;
-    display:flex;
-    align-items:center;
-    justify-content:space-between;
-    padding:0 28px;
-    border-bottom:1px solid var(--line);
+  height:64px;
+  padding:0 28px;
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  border-bottom:1px solid var(--line);
 }
-.header h1{
-    font-weight:300;
-    letter-spacing:6px;
-}
-.header span{
-    font-size:12px;
-    opacity:.6;
-}
-
-/* ======================================================
-MAIN AREA
-====================================================== */
+.header h1{letter-spacing:6px;font-weight:300}
 .main{
-    flex:1;
-    display:grid;
-    grid-template-columns:1.25fr 1fr;
-    gap:22px;
-    padding:22px 28px;
+  flex:1;
+  display:grid;
+  grid-template-columns:1.2fr 1fr;
+  gap:20px;
+  padding:20px;
 }
-
-/* ======================================================
-CAMERA
-====================================================== */
 .camera{
-    background:#000;
-    border-radius:22px;
-    overflow:hidden;
-    position:relative;
+  background:#000;
+  border-radius:22px;
+  overflow:hidden;
+  position:relative;
 }
 video{
-    width:100%;
-    height:100%;
-    object-fit:cover;
-    filter:var(--filter,none);
-}
-.camera::after{
-    content:"";
-    position:absolute;
-    inset:0;
-    background:radial-gradient(circle at top,
-        rgba(255,230,200,.18),
-        rgba(0,0,0,0));
-    pointer-events:none;
+  width:100%;height:100%;
+  object-fit:cover;
+  filter:var(--filter,none);
 }
 .flash{
-    position:absolute;
-    inset:0;
-    background:#fff;
-    opacity:0;
-    pointer-events:none;
+  position:absolute;inset:0;
+  background:#fff;opacity:0;
 }
 .countdown{
-    position:absolute;
-    inset:0;
-    display:none;
-    align-items:center;
-    justify-content:center;
-    font-size:160px;
-    color:white;
-    background:rgba(0,0,0,.45);
+  position:absolute;inset:0;
+  display:none;
+  align-items:center;
+  justify-content:center;
+  font-size:160px;
+  color:white;
+  background:rgba(0,0,0,.45);
 }
 
-/* ======================================================
-SIDE PANEL
-====================================================== */
+/* ================= SIDE ================= */
 .side{
-    display:flex;
-    flex-direction:column;
-    justify-content:space-between;
+  display:flex;
+  flex-direction:column;
+  justify-content:space-between;
 }
-.state{
-    border:1px solid var(--line);
-    border-radius:22px;
-    padding:18px;
-}
-.state h3{
-    font-weight:300;
-    letter-spacing:4px;
-}
-.state p{
-    font-size:13px;
-    opacity:.6;
-    margin-top:6px;
-}
-.step{
-    font-size:56px;
-    margin-top:10px;
-}
-
-/* ======================================================
-PREVIEW GRID
-====================================================== */
 .preview{
-    margin-top:16px;
-    display:grid;
-    grid-template-columns:repeat(3,1fr);
-    gap:10px;
+  display:grid;
+  gap:10px;
 }
-.preview .slot{
-    aspect-ratio:3/4;
-    background:var(--sand);
-    border-radius:16px;
-    padding:6px;
+.slot{
+  background:var(--sand);
+  border-radius:16px;
+  padding:6px;
 }
-.preview img{
-    width:100%;
-    height:100%;
-    object-fit:cover;
-    border-radius:12px;
+.slot img{
+  width:100%;height:100%;
+  object-fit:cover;
+  border-radius:12px;
 }
 
-/* ======================================================
-BUTTONS
-====================================================== */
+/* ================= BUTTON SYSTEM (MUJI) ================= */
 .controls{
-    display:flex;
-    justify-content:space-around;
-    align-items:center;
+  display:flex;
+  flex-direction:column;
+  gap:14px;
 }
 .btn{
-    width:82px;
-    height:82px;
-    border-radius:50%;
-    background:white;
-    border:1px solid var(--brown-soft);
-    font-size:11px;
-    letter-spacing:1px;
-    transition:.2s;
+  all:unset;
+  height:56px;
+  border-radius:28px;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  font-size:15px;
+  background:#fff;
+  border:1px solid var(--line);
 }
-.btn:active{
-    transform:scale(.94);
+.btn.primary{
+  height:72px;
+  border-radius:36px;
+  border:2px solid var(--brown);
 }
-.btn.main{
-    border:3px solid var(--brown);
-    box-shadow:
-        0 0 0 10px rgba(138,111,90,.25),
-        inset 0 0 0 6px rgba(255,255,255,.6);
-}
-.btn:disabled{
-    opacity:.3;
-}
+.btn[disabled]{opacity:.4}
 
-/* ======================================================
-RESULT
-====================================================== */
+/* ================= RESULT ================= */
 #result{
-    flex-direction:column;
-    align-items:center;
-    justify-content:center;
-    gap:22px;
+  flex-direction:column;
+  align-items:center;
+  justify-content:center;
+  gap:20px;
 }
 .frame{
-    background:white;
-    padding:22px;
-    border-radius:26px;
-    box-shadow:0 20px 50px rgba(0,0,0,.25);
+  background:#fff;
+  padding:22px;
+  border-radius:26px;
+  box-shadow:0 20px 50px rgba(0,0,0,.25);
 }
 
-/* ======================================================
-CANVAS
-====================================================== */
-canvas{
-    display:none;
-}
+canvas{display:none}
 </style>
 </head>
 
 <body>
 
-<!-- ======================================================
-IDLE
-====================================================== -->
 <div class="screen active" id="idle">
-    <h1>TOMOPHOTO</h1>
-    <p>Beach Photo Booth</p>
-    <div class="touch" id="enter">TOUCH</div>
+  <h1>TOMOPHOTO</h1>
+  <p>Touch to Start</p>
+  <div class="touch" id="enter">START</div>
 </div>
 
-<!-- ======================================================
-SELECT COUNT
-====================================================== -->
 <div class="screen select" id="selectCount">
-    <h2>SELECT PHOTOS</h2>
-    <div class="options">
-        <div class="option" data-count="2">2<br><small>MINI</small></div>
-        <div class="option active" data-count="4">4<br><small>STANDARD</small></div>
-        <div class="option" data-count="6">6<br><small>JAPAN</small></div>
-    </div>
+  <h2>SELECT PHOTOS</h2>
+  <div class="options">
+    <div class="option" data-count="2">2</div>
+    <div class="option active" data-count="4">4</div>
+    <div class="option" data-count="6">6</div>
+  </div>
 </div>
 
-<!-- ======================================================
-SELECT FILTER
-====================================================== -->
 <div class="screen select" id="selectFilter">
-    <h2>SELECT FILTER</h2>
-    <div class="options">
-        <div class="option active" data-filter="none">CLEAN</div>
-        <div class="option" data-filter="brightness(1.08) saturate(1.1)">BEACH</div>
-        <div class="option" data-filter="sepia(.28)">FILM</div>
-        <div class="option" data-filter="contrast(1.1) saturate(1.2)">SUNSET</div>
-    </div>
+  <h2>FILTER</h2>
+  <div class="options">
+    <div class="option active" data-filter="none">CLEAN</div>
+    <div class="option" data-filter="brightness(1.1) saturate(1.1)">BEACH</div>
+    <div class="option" data-filter="sepia(.25)">FILM</div>
+  </div>
 </div>
 
-<!-- ======================================================
-BOOTH
-====================================================== -->
 <div class="screen" id="booth">
-    <div class="header">
-        <h1>TOMOPHOTO</h1>
-        <span id="status">READY</span>
+  <div class="header">
+    <h1>TOMOPHOTO</h1>
+  </div>
+  <div class="main">
+    <div class="camera">
+      <video id="video" autoplay playsinline></video>
+      <div class="flash" id="flash"></div>
+      <div class="countdown" id="countdown">3</div>
     </div>
-
-    <div class="main">
-        <div class="camera">
-            <video id="video" autoplay playsinline></video>
-            <div class="flash" id="flash"></div>
-            <div class="countdown" id="countdown">3</div>
-        </div>
-
-        <div class="side">
-            <div class="state">
-                <h3 id="state">READY</h3>
-                <p id="hint">Stand in the frame</p>
-                <div class="step" id="step">—</div>
-
-                <div class="preview" id="preview"></div>
-            </div>
-
-            <div class="controls">
-                <button class="btn main" id="shoot">SHOT</button>
-                <button class="btn" id="saveImg" disabled>IMAGE</button>
-                <button class="btn" id="saveVid" disabled>VIDEO</button>
-                <button class="btn" id="reset" disabled>RESET</button>
-            </div>
-        </div>
+    <div class="side">
+      <div class="preview" id="preview"></div>
+      <div class="controls">
+        <button class="btn primary" id="shoot">● ถ่ายรูป</button>
+        <button class="btn" id="saveImage" disabled>บันทึกรูป</button>
+        <button class="btn" id="reset" disabled>ถ่ายใหม่</button>
+      </div>
     </div>
+  </div>
 </div>
 
-<!-- ======================================================
-RESULT
-====================================================== -->
 <div class="screen" id="result">
-    <div class="frame">
-        <canvas id="strip"></canvas>
-    </div>
-    <button class="btn" onclick="location.reload()">RESTART</button>
+  <div class="frame">
+    <canvas id="strip"></canvas>
+  </div>
+  <button class="btn" onclick="location.reload()">เริ่มใหม่</button>
 </div>
-
-<canvas id="videoCanvas"></canvas>
 
 <script>
-/* ======================================================
-STATE
-====================================================== */
-let photoCount = 4;
-let filter = "none";
-let shots = [];
+let count=4,filter="none",shots=[];
+const idle=idle,selectCount=selectCount,selectFilter=selectFilter,booth=booth,result=result;
+const video=document.getElementById("video");
+const preview=document.getElementById("preview");
+const strip=document.getElementById("strip");
+const ctx=strip.getContext("2d");
 
-const idle = document.getElementById("idle");
-const selectCount = document.getElementById("selectCount");
-const selectFilter = document.getElementById("selectFilter");
-const booth = document.getElementById("booth");
-const result = document.getElementById("result");
-
-const video = document.getElementById("video");
-const preview = document.getElementById("preview");
-const strip = document.getElementById("strip");
-const ctx = strip.getContext("2d");
-
-/* ======================================================
-CAMERA
-====================================================== */
 navigator.mediaDevices.getUserMedia({video:{facingMode:"user"}})
 .then(s=>video.srcObject=s);
 
-/* ======================================================
-FLOW
-====================================================== */
-enter.onclick=()=>{
-    idle.classList.remove("active");
-    selectCount.classList.add("active");
-};
+enter.onclick=()=>{idle.classList.remove("active");selectCount.classList.add("active")};
 
-document.querySelectorAll("[data-count]").forEach(el=>{
-    el.onclick=()=>{
-        document.querySelectorAll("[data-count]").forEach(x=>x.classList.remove("active"));
-        el.classList.add("active");
-        photoCount = +el.dataset.count;
-        selectCount.classList.remove("active");
-        selectFilter.classList.add("active");
-    };
+document.querySelectorAll("[data-count]").forEach(o=>{
+  o.onclick=()=>{
+    document.querySelectorAll("[data-count]").forEach(x=>x.classList.remove("active"));
+    o.classList.add("active");
+    count=+o.dataset.count;
+    selectCount.classList.remove("active");
+    selectFilter.classList.add("active");
+  };
 });
 
-document.querySelectorAll("[data-filter]").forEach(el=>{
-    el.onclick=()=>{
-        document.querySelectorAll("[data-filter]").forEach(x=>x.classList.remove("active"));
-        el.classList.add("active");
-        filter = el.dataset.filter;
-        video.style.filter = filter;
-        selectFilter.classList.remove("active");
-        booth.classList.add("active");
-        buildPreview();
-    };
+document.querySelectorAll("[data-filter]").forEach(o=>{
+  o.onclick=()=>{
+    document.querySelectorAll("[data-filter]").forEach(x=>x.classList.remove("active"));
+    o.classList.add("active");
+    filter=o.dataset.filter;
+    video.style.filter=filter;
+    selectFilter.classList.remove("active");
+    booth.classList.add("active");
+    buildPreview();
+  };
 });
 
-/* ======================================================
-PREVIEW
-====================================================== */
 function buildPreview(){
-    preview.innerHTML="";
-    const cols = photoCount>=4?3:photoCount;
-    preview.style.gridTemplateColumns = `repeat(${cols},1fr)`;
-    for(let i=0;i<photoCount;i++){
-        preview.innerHTML+=`<div class="slot"><img></div>`;
-    }
+  preview.innerHTML="";
+  preview.style.gridTemplateColumns=`repeat(${Math.min(count,3)},1fr)`;
+  for(let i=0;i<count;i++){
+    preview.innerHTML+=`<div class="slot"><img></div>`;
+  }
 }
 
-/* ======================================================
-SHOOT
-====================================================== */
 shoot.onclick=async()=>{
-    shots=[];
-    const imgs=[...preview.querySelectorAll("img")];
-    saveImg.disabled=true;
-    saveVid.disabled=true;
-    reset.disabled=true;
-
-    for(let i=0;i<photoCount;i++){
-        await countdownAnim();
-        flash.style.opacity=1;
-        await sleep(120);
-        flash.style.opacity=0;
-
-        const c=document.createElement("canvas");
-        c.width=video.videoWidth;
-        c.height=video.videoHeight;
-        c.getContext("2d").drawImage(video,0,0);
-        shots.push(c);
-        imgs[i].src=c.toDataURL("image/png");
-        await sleep(500);
-    }
-    buildStrip();
-    saveImg.disabled=false;
-    saveVid.disabled=false;
-    reset.disabled=false;
+  shots=[];
+  const imgs=[...preview.querySelectorAll("img")];
+  for(let i=0;i<count;i++){
+    await countdown();
+    flash.style.opacity=1;await sleep(120);flash.style.opacity=0;
+    const c=document.createElement("canvas");
+    c.width=video.videoWidth;
+    c.height=video.videoHeight;
+    c.getContext("2d").drawImage(video,0,0);
+    shots.push(c);
+    imgs[i].src=c.toDataURL();
+  }
+  buildStrip();
+  saveImage.disabled=false;
+  reset.disabled=false;
 };
 
-/* ======================================================
-COUNTDOWN
-====================================================== */
-async function countdownAnim(){
-    countdown.style.display="flex";
-    for(let i=3;i>0;i--){
-        countdown.textContent=i;
-        await sleep(1000);
-    }
-    countdown.style.display="none";
+async function countdown(){
+  countdownEl.style.display="flex";
+  for(let i=3;i>0;i--){
+    countdownEl.textContent=i;
+    await sleep(1000);
+  }
+  countdownEl.style.display="none";
 }
 
-/* ======================================================
-STRIP
-====================================================== */
 function buildStrip(){
-    const w = shots[0].width;
-    const h = shots[0].height;
-    const pad = 28;
-    const head = 120;
-
-    strip.width = w + pad*2;
-    strip.height = head + h*photoCount + pad*(photoCount+1);
-
-    ctx.fillStyle="#fff";
-    ctx.fillRect(0,0,strip.width,strip.height);
-
-    ctx.fillStyle="#2a2a2a";
-    ctx.textAlign="center";
-    ctx.font="300 36px Inter";
-    ctx.fillText("TOMOPHOTO",strip.width/2,60);
-    ctx.font="300 14px Inter";
-    ctx.fillText(new Date().toLocaleDateString(),strip.width/2,90);
-
-    shots.forEach((c,i)=>{
-        const y = head + pad + i*(h+pad);
-        ctx.strokeStyle="#8a6f5a";
-        ctx.lineWidth=1;
-        ctx.strokeRect(pad-4,y-4,w+8,h+8);
-        ctx.drawImage(c,pad,y,w,h);
-    });
-
-    booth.classList.remove("active");
-    result.classList.add("active");
+  const w=shots[0].width,h=shots[0].height;
+  strip.width=w+80;
+  strip.height=h*count+160;
+  ctx.fillStyle="#fff";
+  ctx.fillRect(0,0,strip.width,strip.height);
+  ctx.fillStyle="#2a2a2a";
+  ctx.textAlign="center";
+  ctx.font="300 36px Inter";
+  ctx.fillText("TOMOPHOTO",strip.width/2,60);
+  shots.forEach((c,i)=>{
+    const y=120+i*h;
+    ctx.strokeStyle="#8a6f5a";
+    ctx.strokeRect(40,y-6,w+12,h+12);
+    ctx.drawImage(c,46,y,w,h);
+  });
+  booth.classList.remove("active");
+  result.classList.add("active");
 }
 
-/* ======================================================
-SAVE IMAGE
-====================================================== */
-saveImg.onclick=()=>{
+saveImage.onclick=()=>{
+  strip.toBlob(b=>{
     const a=document.createElement("a");
-    a.href=strip.toDataURL("image/png");
+    a.href=URL.createObjectURL(b);
     a.download="TOMOPHOTO.png";
     a.click();
+  });
 };
 
-/* ======================================================
-UTIL
-====================================================== */
-function sleep(ms){
-    return new Promise(r=>setTimeout(r,ms));
-}
+function sleep(ms){return new Promise(r=>setTimeout(r,ms))}
 </script>
 
 </body>
