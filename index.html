@@ -5,37 +5,51 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>TOMOPHOTO</title>
 
+<!-- =========================
+     GLOBAL STYLE
+========================= -->
 <style>
-*{box-sizing:border-box}
-body{
+
+/* RESET */
+*{
   margin:0;
-  background:#eaf6fb;
+  padding:0;
+  box-sizing:border-box;
+}
+
+/* BODY */
+body{
+  height:100vh;
+  background:#f2f2f2;
   font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;
   display:flex;
   justify-content:center;
   align-items:center;
-  height:100vh;
 }
 
-/* ตัวตู้ */
+/* =========================
+     BOOTH SHELL
+========================= */
 .booth{
   width:440px;
-  background:#fff;
-  border-radius:24px;
+  background:#ffffff;
+  border-radius:28px;
   padding:16px;
-  box-shadow:0 24px 50px rgba(0,0,0,.2);
+  box-shadow:0 25px 60px rgba(0,0,0,.25);
 }
 
-/* ชื่อร้าน */
+/* HEADER */
 .header{
   text-align:center;
   font-size:14px;
-  letter-spacing:2px;
+  letter-spacing:3px;
   color:#444;
-  margin-bottom:8px;
+  margin-bottom:10px;
 }
 
-/* จอกล้อง */
+/* =========================
+     CAMERA SCREEN
+========================= */
 .screen{
   position:relative;
   border-radius:20px;
@@ -48,34 +62,36 @@ video{
   display:block;
 }
 
-/* เลขนับ */
+/* COUNTDOWN OVERLAY */
 .countdown{
   position:absolute;
   inset:0;
   display:flex;
   justify-content:center;
   align-items:center;
-  font-size:80px;
-  font-weight:600;
-  color:white;
-  background:rgba(0,0,0,.4);
+  font-size:96px;
+  font-weight:700;
+  color:#fff;
+  background:rgba(0,0,0,.45);
   display:none;
 }
 
-/* พรีวิว */
+/* =========================
+     PREVIEW STRIP
+========================= */
 .previews{
   display:flex;
-  justify-content:space-between;
+  gap:10px;
   margin-top:12px;
 }
 
 .preview{
-  width:30%;
+  flex:1;
   aspect-ratio:3/4;
-  border-radius:12px;
+  border-radius:14px;
   border:2px solid #ddd;
-  background:#f5f5f5;
   overflow:hidden;
+  background:#eee;
 }
 
 .preview img{
@@ -84,7 +100,9 @@ video{
   object-fit:cover;
 }
 
-/* ปุ่ม */
+/* =========================
+     CONTROLS
+========================= */
 .controls{
   display:flex;
   justify-content:space-between;
@@ -92,35 +110,46 @@ video{
   margin-top:16px;
 }
 
-/* ชัตเตอร์ */
+/* SHUTTER BUTTON */
 .shutter{
-  width:76px;
-  height:76px;
+  width:80px;
+  height:80px;
   border-radius:50%;
-  background:white;
-  border:7px solid #e0e0e0;
+  background:#fff;
+  border:8px solid #ddd;
   cursor:pointer;
+  transition:transform .1s;
 }
 
-.shutter:active{transform:scale(.94)}
+.shutter:active{
+  transform:scale(.94);
+}
 
-/* ปุ่มเล็ก */
+/* SIDE BUTTON */
 .btn{
   padding:8px 14px;
   border-radius:10px;
   border:none;
   background:#f0f0f0;
-  cursor:pointer;
   font-size:13px;
+  cursor:pointer;
 }
 
-.btn:hover{background:#e2e2e2}
+.btn:disabled{
+  opacity:.4;
+  cursor:not-allowed;
+}
+
 </style>
 </head>
 
 <body>
 
+<!-- =========================
+     BOOTH UI
+========================= -->
 <div class="booth">
+
   <div class="header">TOMOPHOTO</div>
 
   <div class="screen">
@@ -137,15 +166,28 @@ video{
   <div class="controls">
     <button class="btn" id="resetBtn">รีเซ็ต</button>
     <div class="shutter" id="shutter"></div>
-    <a class="btn" id="downloadBtn" download="TOMOPHOTO.png">ดาวน์โหลด</a>
+    <a class="btn" id="downloadBtn" download="TOMOPHOTO.png" disabled>
+      ดาวน์โหลด
+    </a>
   </div>
+
 </div>
 
+<!-- CANVAS -->
 <canvas id="canvas" hidden></canvas>
 
+<!-- =========================
+     SCRIPT LOGIC
+========================= -->
 <script>
+
+/* =========================
+   DOM REFERENCES
+========================= */
 const video = document.getElementById("video");
 const canvas = document.getElementById("canvas");
+const ctx = canvas.getContext("2d");
+
 const countdown = document.getElementById("countdown");
 const shutter = document.getElementById("shutter");
 const resetBtn = document.getElementById("resetBtn");
@@ -157,49 +199,89 @@ const previews = [
   document.getElementById("p3")
 ];
 
-let shot = 0;
-let lastImage = null;
+/* =========================
+   STATE
+========================= */
+let isBusy = false;
+let images = [];
 
-/* เปิดกล้อง */
-navigator.mediaDevices.getUserMedia({video:true})
-.then(stream => video.srcObject = stream);
+/* =========================
+   UTILS
+========================= */
+const sleep = ms => new Promise(r => setTimeout(r, ms));
 
-/* หน่วงเวลา */
-const sleep = ms => new Promise(r=>setTimeout(r,ms));
-
-/* ถ่าย */
-async function takePhoto(){
-  if(shot >= 3) return;
-
-  countdown.style.display="flex";
-  for(let i=3;i>0;i--){
-    countdown.textContent=i;
-    await sleep(700);
+/* =========================
+   CAMERA INIT
+========================= */
+async function initCamera(){
+  try{
+    const stream = await navigator.mediaDevices.getUserMedia({video:true});
+    video.srcObject = stream;
+  }catch(err){
+    alert("ไม่สามารถเปิดกล้องได้");
   }
-  countdown.style.display="none";
-
-  canvas.width = video.videoWidth;
-  canvas.height = video.videoHeight;
-  canvas.getContext("2d").drawImage(video,0,0);
-
-  lastImage = canvas.toDataURL("image/png");
-  previews[shot].src = lastImage;
-
-  if(shot === 2){
-    downloadBtn.href = lastImage;
-  }
-
-  shot++;
 }
 
-/* รีเซ็ต */
-resetBtn.onclick = ()=>{
-  shot = 0;
-  previews.forEach(p=>p.src="");
-  downloadBtn.removeAttribute("href");
-};
+/* =========================
+   AUTO SHOOT LOGIC
+========================= */
+async function autoShoot(){
 
-shutter.onclick = takePhoto;
+  if(isBusy) return;
+  isBusy = true;
+
+  images = [];
+  previews.forEach(p => p.src = "");
+  downloadBtn.setAttribute("disabled", true);
+
+  for(let i=0;i<3;i++){
+
+    countdown.style.display="flex";
+
+    for(let n=3;n>0;n--){
+      countdown.textContent = n;
+      await sleep(700);
+    }
+
+    countdown.style.display="none";
+
+    canvas.width = video.videoWidth;
+    canvas.height = video.videoHeight;
+    ctx.drawImage(video,0,0);
+
+    const img = canvas.toDataURL("image/png");
+    images.push(img);
+    previews[i].src = img;
+
+    await sleep(500);
+  }
+
+  downloadBtn.href = images[2];
+  downloadBtn.removeAttribute("disabled");
+  isBusy = false;
+}
+
+/* =========================
+   RESET
+========================= */
+function resetBooth(){
+  images = [];
+  previews.forEach(p => p.src = "");
+  downloadBtn.setAttribute("disabled", true);
+  isBusy = false;
+}
+
+/* =========================
+   EVENTS
+========================= */
+shutter.onclick = autoShoot;
+resetBtn.onclick = resetBooth;
+
+/* =========================
+   START
+========================= */
+initCamera();
+
 </script>
 
 </body>
