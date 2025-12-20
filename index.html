@@ -2,15 +2,16 @@
 <html lang="th">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>TOMOPHOTO</title>
 
 <style>
 :root{
-  --cream:#fdfaf6;
+  --cream:#f7f3ee;
   --paper:#fffdfa;
   --brown:#6b4b35;
-  --soft:#cbb6a0;
+  --brown-soft:#bfa58a;
+  --line:#e6dccf;
 }
 
 *{box-sizing:border-box}
@@ -27,23 +28,36 @@ body{
 }
 
 .booth{
-  background:var(--paper);
   width:420px;
+  background:var(--paper);
+  border-radius:22px;
   padding:18px;
-  border-radius:18px;
-  box-shadow:0 15px 40px rgba(0,0,0,.15);
+  box-shadow:0 18px 45px rgba(0,0,0,.18);
+}
+
+/* ===== HEADER ===== */
+.header{
   text-align:center;
+  margin-bottom:10px;
 }
 
-h1{
-  margin:4px 0 12px;
-  letter-spacing:3px;
+.header h1{
+  margin:6px 0 2px;
   font-weight:500;
+  letter-spacing:3px;
 }
 
-.camera-frame{
+.header p{
+  margin:0;
+  font-size:13px;
+  color:#9b8570;
+}
+
+/* ===== CAMERA ===== */
+.camera-box{
+  margin-top:12px;
   border:4px solid var(--brown);
-  border-radius:14px;
+  border-radius:16px;
   overflow:hidden;
 }
 
@@ -52,53 +66,72 @@ video{
   display:block;
 }
 
-.counter{
-  font-size:64px;
-  margin:10px 0;
+/* ===== COUNTDOWN ===== */
+.countdown{
+  height:60px;
+  display:flex;
+  justify-content:center;
+  align-items:center;
+  font-size:56px;
   font-weight:600;
 }
 
-.controls{
-  margin-top:12px;
+/* ===== BUTTON ===== */
+.action{
+  display:flex;
+  justify-content:center;
+  margin-top:6px;
 }
 
 button{
   background:var(--brown);
-  color:white;
+  color:#fff;
   border:none;
-  border-radius:50px;
-  padding:12px 22px;
+  border-radius:999px;
+  padding:14px 32px;
   font-size:16px;
   cursor:pointer;
+  box-shadow:0 6px 0 #4e3426;
+  transition:.15s;
+}
+
+button:active{
+  transform:translateY(3px);
+  box-shadow:0 3px 0 #4e3426;
 }
 
 button:disabled{
   opacity:.5;
-  cursor:not-allowed;
+  box-shadow:none;
 }
 
+/* ===== RESULT ===== */
 .result{
-  margin-top:18px;
-  background:#f6f1eb;
+  margin-top:16px;
+  background:#f3eee8;
   padding:14px;
-  border-radius:14px;
+  border-radius:16px;
 }
 
 .result img{
   width:100%;
-  border-radius:10px;
-  border:4px solid white;
-  box-shadow:0 8px 20px rgba(0,0,0,.18);
+  border-radius:12px;
+  border:4px solid #fff;
+  box-shadow:0 8px 22px rgba(0,0,0,.18);
 }
 
+/* ===== DOWNLOAD ===== */
 .download{
-  display:inline-block;
-  margin-top:12px;
-  padding:10px 20px;
-  background:var(--soft);
+  display:block;
+  margin:14px auto 0;
+  text-align:center;
+  background:var(--brown-soft);
   color:#fff;
+  padding:10px 0;
+  width:70%;
+  border-radius:999px;
   text-decoration:none;
-  border-radius:30px;
+  font-size:15px;
   opacity:.4;
   pointer-events:none;
 }
@@ -108,21 +141,26 @@ button:disabled{
 <body>
 
 <div class="booth">
-  <h1>TOMOPHOTO</h1>
+  <div class="header">
+    <h1>TOMOPHOTO</h1>
+    <p>self photo booth</p>
+  </div>
 
-  <div class="camera-frame">
+  <div class="camera-box">
     <video id="video" autoplay playsinline></video>
   </div>
 
-  <div class="counter" id="counter"> </div>
+  <div class="countdown" id="countdown"></div>
 
-  <div class="controls">
+  <div class="action">
     <button id="startBtn">เริ่มถ่าย</button>
   </div>
 
   <div class="result">
     <img id="resultImg">
-    <a id="downloadBtn" class="download" download="TOMOPHOTO.png">ดาวน์โหลดรูป</a>
+    <a id="downloadBtn" class="download" download="TOMOPHOTO.png">
+      ดาวน์โหลดรูป
+    </a>
   </div>
 </div>
 
@@ -133,7 +171,7 @@ button:disabled{
 const video = document.getElementById("video");
 const canvas = document.getElementById("canvas");
 const finalCanvas = document.getElementById("finalCanvas");
-const counter = document.getElementById("counter");
+const countdownEl = document.getElementById("countdown");
 const startBtn = document.getElementById("startBtn");
 const resultImg = document.getElementById("resultImg");
 const downloadBtn = document.getElementById("downloadBtn");
@@ -142,23 +180,26 @@ let shots = [];
 
 // เปิดกล้อง
 navigator.mediaDevices.getUserMedia({video:true})
-.then(stream=>video.srcObject=stream)
+.then(s=>video.srcObject=s)
 .catch(()=>alert("ไม่สามารถเปิดกล้องได้"));
 
-// นับถอยหลัง
+// countdown UX ชัด
 function countdown(sec){
   return new Promise(res=>{
     let n = sec;
-    counter.textContent = n;
+    countdownEl.textContent = n;
     const t = setInterval(()=>{
       n--;
-      counter.textContent = n>0?n:"";
-      if(n<=0){ clearInterval(t); res(); }
+      countdownEl.textContent = n>0?n:"";
+      if(n<=0){
+        clearInterval(t);
+        res();
+      }
     },1000);
   });
 }
 
-// ถ่ายรูป
+// ถ่ายภาพ
 function snap(){
   const ctx = canvas.getContext("2d");
   canvas.width = video.videoWidth;
@@ -167,7 +208,7 @@ function snap(){
   shots.push(canvas.toDataURL("image/png"));
 }
 
-// รวมรูปเป็นแถบยาว
+// รวมเป็นรูปตู้
 async function buildFinal(){
   const ctx = finalCanvas.getContext("2d");
   finalCanvas.width = 420;
@@ -176,17 +217,17 @@ async function buildFinal(){
   ctx.fillStyle="#fffdfa";
   ctx.fillRect(0,0,420,1200);
 
-  const images = await Promise.all(
-    shots.map(src=>new Promise(res=>{
-      const img=new Image();
-      img.onload=()=>res(img);
-      img.src=src;
+  const imgs = await Promise.all(
+    shots.map(src=>new Promise(r=>{
+      const i=new Image();
+      i.onload=()=>r(i);
+      i.src=src;
     }))
   );
 
-  images.forEach((img,i)=>{
+  imgs.forEach((img,i)=>{
     ctx.drawImage(img,30,40+i*360,360,300);
-    ctx.strokeStyle="#ddd2c4";
+    ctx.strokeStyle="#e0d5c7";
     ctx.lineWidth=2;
     ctx.strokeRect(30,40+i*360,360,300);
   });
@@ -203,14 +244,18 @@ async function buildFinal(){
   downloadBtn.style.pointerEvents="auto";
 }
 
-// ปุ่มเริ่ม
+// flow ใช้ง่าย
 startBtn.onclick = async ()=>{
   shots=[];
+  downloadBtn.style.opacity=".4";
+  downloadBtn.style.pointerEvents="none";
   startBtn.disabled=true;
+
   for(let i=0;i<3;i++){
     await countdown(3);
     snap();
   }
+
   await buildFinal();
   startBtn.disabled=false;
 };
