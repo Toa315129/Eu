@@ -19,26 +19,26 @@ body{
 
 /* ตัวตู้ */
 .booth{
-  width:430px;
+  width:440px;
   background:#fff;
-  border-radius:22px;
+  border-radius:24px;
   padding:16px;
-  box-shadow:0 20px 40px rgba(0,0,0,.18);
+  box-shadow:0 24px 50px rgba(0,0,0,.2);
 }
 
-/* หัว */
+/* ชื่อร้าน */
 .header{
   text-align:center;
-  font-size:13px;
+  font-size:14px;
+  letter-spacing:2px;
   color:#444;
   margin-bottom:8px;
-  letter-spacing:1px;
 }
 
 /* จอกล้อง */
 .screen{
   position:relative;
-  border-radius:18px;
+  border-radius:20px;
   overflow:hidden;
   background:#000;
 }
@@ -55,24 +55,24 @@ video{
   display:flex;
   justify-content:center;
   align-items:center;
-  font-size:72px;
+  font-size:80px;
   font-weight:600;
   color:white;
-  background:rgba(0,0,0,.35);
+  background:rgba(0,0,0,.4);
   display:none;
 }
 
-/* ตัวอย่างรูป */
+/* พรีวิว */
 .previews{
   display:flex;
   justify-content:space-between;
-  margin-top:10px;
+  margin-top:12px;
 }
 
 .preview{
   width:30%;
   aspect-ratio:3/4;
-  border-radius:10px;
+  border-radius:12px;
   border:2px solid #ddd;
   background:#f5f5f5;
   overflow:hidden;
@@ -87,22 +87,34 @@ video{
 /* ปุ่ม */
 .controls{
   display:flex;
-  justify-content:center;
-  margin-top:14px;
+  justify-content:space-between;
+  align-items:center;
+  margin-top:16px;
 }
 
+/* ชัตเตอร์ */
 .shutter{
-  width:72px;
-  height:72px;
+  width:76px;
+  height:76px;
   border-radius:50%;
   background:white;
-  border:6px solid #e0e0e0;
+  border:7px solid #e0e0e0;
   cursor:pointer;
 }
 
-.shutter:active{
-  transform:scale(.95);
+.shutter:active{transform:scale(.94)}
+
+/* ปุ่มเล็ก */
+.btn{
+  padding:8px 14px;
+  border-radius:10px;
+  border:none;
+  background:#f0f0f0;
+  cursor:pointer;
+  font-size:13px;
 }
+
+.btn:hover{background:#e2e2e2}
 </style>
 </head>
 
@@ -123,7 +135,9 @@ video{
   </div>
 
   <div class="controls">
+    <button class="btn" id="resetBtn">รีเซ็ต</button>
     <div class="shutter" id="shutter"></div>
+    <a class="btn" id="downloadBtn" download="TOMOPHOTO.png">ดาวน์โหลด</a>
   </div>
 </div>
 
@@ -134,6 +148,9 @@ const video = document.getElementById("video");
 const canvas = document.getElementById("canvas");
 const countdown = document.getElementById("countdown");
 const shutter = document.getElementById("shutter");
+const resetBtn = document.getElementById("resetBtn");
+const downloadBtn = document.getElementById("downloadBtn");
+
 const previews = [
   document.getElementById("p1"),
   document.getElementById("p2"),
@@ -141,29 +158,46 @@ const previews = [
 ];
 
 let shot = 0;
+let lastImage = null;
 
+/* เปิดกล้อง */
 navigator.mediaDevices.getUserMedia({video:true})
 .then(stream => video.srcObject = stream);
 
-function sleep(ms){return new Promise(r=>setTimeout(r,ms))}
+/* หน่วงเวลา */
+const sleep = ms => new Promise(r=>setTimeout(r,ms));
 
+/* ถ่าย */
 async function takePhoto(){
-  if(shot>=3) return;
-  countdown.style.display="flex";
+  if(shot >= 3) return;
 
+  countdown.style.display="flex";
   for(let i=3;i>0;i--){
     countdown.textContent=i;
     await sleep(700);
   }
-
   countdown.style.display="none";
 
   canvas.width = video.videoWidth;
   canvas.height = video.videoHeight;
   canvas.getContext("2d").drawImage(video,0,0);
-  previews[shot].src = canvas.toDataURL("image/png");
+
+  lastImage = canvas.toDataURL("image/png");
+  previews[shot].src = lastImage;
+
+  if(shot === 2){
+    downloadBtn.href = lastImage;
+  }
+
   shot++;
 }
+
+/* รีเซ็ต */
+resetBtn.onclick = ()=>{
+  shot = 0;
+  previews.forEach(p=>p.src="");
+  downloadBtn.removeAttribute("href");
+};
 
 shutter.onclick = takePhoto;
 </script>
