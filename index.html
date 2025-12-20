@@ -6,63 +6,41 @@
 <title>TOMOPHOTO</title>
 
 <style>
-:root{
-  --cream:#f6f2ed;
-  --paper:#fffdfa;
-  --brown:#6b4b35;
-  --brown-soft:#c8b19a;
-  --line:#e6dccf;
-}
-
 *{box-sizing:border-box}
-
 body{
   margin:0;
-  background:var(--cream);
+  background:#eaf6fb;
   font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;
   display:flex;
   justify-content:center;
   align-items:center;
-  min-height:100vh;
-  color:var(--brown);
+  height:100vh;
 }
 
-/* ===== BOOTH ===== */
+/* ตัวตู้ */
 .booth{
-  width:420px;
-  background:var(--paper);
-  border-radius:26px;
-  padding:18px;
-  box-shadow:0 20px 50px rgba(0,0,0,.2);
+  width:430px;
+  background:#fff;
+  border-radius:22px;
+  padding:16px;
+  box-shadow:0 20px 40px rgba(0,0,0,.18);
 }
 
-/* ===== HEADER ===== */
+/* หัว */
 .header{
   text-align:center;
-}
-.header h1{
-  margin:6px 0 2px;
-  font-weight:500;
-  letter-spacing:3px;
-}
-.header p{
-  margin:0;
   font-size:13px;
-  color:#9b8570;
+  color:#444;
+  margin-bottom:8px;
+  letter-spacing:1px;
 }
 
-/* ===== CAMERA ===== */
-.camera-wrap{
-  margin-top:12px;
-  padding:10px;
-  background:#f3eee8;
-  border-radius:20px;
-}
-
-.camera-frame{
-  border:4px solid var(--brown);
+/* จอกล้อง */
+.screen{
+  position:relative;
   border-radius:18px;
   overflow:hidden;
+  background:#000;
 }
 
 video{
@@ -70,87 +48,60 @@ video{
   display:block;
 }
 
-/* ===== COUNTDOWN ===== */
+/* เลขนับ */
 .countdown{
-  height:64px;
+  position:absolute;
+  inset:0;
   display:flex;
   justify-content:center;
   align-items:center;
-  font-size:56px;
+  font-size:72px;
   font-weight:600;
+  color:white;
+  background:rgba(0,0,0,.35);
+  display:none;
 }
 
-/* ===== BUTTONS ===== */
-.actions{
+/* ตัวอย่างรูป */
+.previews{
+  display:flex;
+  justify-content:space-between;
+  margin-top:10px;
+}
+
+.preview{
+  width:30%;
+  aspect-ratio:3/4;
+  border-radius:10px;
+  border:2px solid #ddd;
+  background:#f5f5f5;
+  overflow:hidden;
+}
+
+.preview img{
+  width:100%;
+  height:100%;
+  object-fit:cover;
+}
+
+/* ปุ่ม */
+.controls{
   display:flex;
   justify-content:center;
-  gap:12px;
+  margin-top:14px;
 }
 
-button{
-  background:var(--brown);
-  color:#fff;
-  border:none;
-  border-radius:999px;
-  padding:14px 26px;
-  font-size:15px;
+.shutter{
+  width:72px;
+  height:72px;
+  border-radius:50%;
+  background:white;
+  border:6px solid #e0e0e0;
   cursor:pointer;
-  box-shadow:0 6px 0 #4e3426;
-  transition:.15s;
 }
 
-button:active{
-  transform:translateY(3px);
-  box-shadow:0 3px 0 #4e3426;
-}
-
-button.secondary{
-  background:var(--brown-soft);
-  box-shadow:0 6px 0 #a48b74;
-}
-
-button:disabled{
-  opacity:.5;
-  box-shadow:none;
-  cursor:not-allowed;
-}
-
-/* ===== RESULT ===== */
-.result{
-  margin-top:16px;
-  background:#f3eee8;
-  padding:16px;
-  border-radius:20px;
-}
-
-.photo-frame{
-  background:#fff;
-  padding:12px;
-  border-radius:14px;
-  box-shadow:inset 0 0 0 2px var(--line);
-}
-
-.photo-frame img{
-  width:100%;
-  border-radius:10px;
-  border:4px solid #fff;
-  box-shadow:0 8px 22px rgba(0,0,0,.18);
-}
-
-/* ===== DOWNLOAD ===== */
-.download{
-  display:block;
-  margin:14px auto 0;
-  width:70%;
-  text-align:center;
-  background:var(--brown-soft);
-  color:#fff;
-  padding:10px 0;
-  border-radius:999px;
-  text-decoration:none;
-  font-size:15px;
-  opacity:.4;
-  pointer-events:none;
+.shutter:active{
+  transform:scale(.95);
 }
 </style>
 </head>
@@ -158,140 +109,63 @@ button:disabled{
 <body>
 
 <div class="booth">
-  <div class="header">
-    <h1>TOMOPHOTO</h1>
-    <p>self photo booth</p>
+  <div class="header">TOMOPHOTO</div>
+
+  <div class="screen">
+    <video id="video" autoplay playsinline></video>
+    <div class="countdown" id="countdown">3</div>
   </div>
 
-  <div class="camera-wrap">
-    <div class="camera-frame">
-      <video id="video" autoplay playsinline></video>
-    </div>
+  <div class="previews">
+    <div class="preview"><img id="p1"></div>
+    <div class="preview"><img id="p2"></div>
+    <div class="preview"><img id="p3"></div>
   </div>
 
-  <div class="countdown" id="countdown"></div>
-
-  <div class="actions">
-    <button id="startBtn">ถ่ายรูป</button>
-    <button id="resetBtn" class="secondary">รีเซต</button>
-  </div>
-
-  <div class="result">
-    <div class="photo-frame">
-      <img id="resultImg">
-    </div>
-    <a id="downloadBtn" class="download" download="TOMOPHOTO.png">
-      ดาวน์โหลดรูป
-    </a>
+  <div class="controls">
+    <div class="shutter" id="shutter"></div>
   </div>
 </div>
 
 <canvas id="canvas" hidden></canvas>
-<canvas id="finalCanvas" hidden></canvas>
 
 <script>
 const video = document.getElementById("video");
 const canvas = document.getElementById("canvas");
-const finalCanvas = document.getElementById("finalCanvas");
-const countdownEl = document.getElementById("countdown");
-const startBtn = document.getElementById("startBtn");
-const resetBtn = document.getElementById("resetBtn");
-const resultImg = document.getElementById("resultImg");
-const downloadBtn = document.getElementById("downloadBtn");
+const countdown = document.getElementById("countdown");
+const shutter = document.getElementById("shutter");
+const previews = [
+  document.getElementById("p1"),
+  document.getElementById("p2"),
+  document.getElementById("p3")
+];
 
-let shots = [];
+let shot = 0;
 
-/* ===== CAMERA ===== */
 navigator.mediaDevices.getUserMedia({video:true})
-.then(s=>video.srcObject=s)
-.catch(()=>alert("ไม่สามารถเปิดกล้องได้"));
+.then(stream => video.srcObject = stream);
 
-/* ===== COUNTDOWN ===== */
-function countdown(sec){
-  return new Promise(res=>{
-    let n = sec;
-    countdownEl.textContent = n;
-    const t = setInterval(()=>{
-      n--;
-      countdownEl.textContent = n>0?n:"";
-      if(n<=0){
-        clearInterval(t);
-        res();
-      }
-    },1000);
-  });
-}
+function sleep(ms){return new Promise(r=>setTimeout(r,ms))}
 
-/* ===== SNAP ===== */
-function snap(){
-  const ctx = canvas.getContext("2d");
-  canvas.width = video.videoWidth;
-  canvas.height = video.videoHeight;
-  ctx.drawImage(video,0,0);
-  shots.push(canvas.toDataURL("image/png"));
-}
+async function takePhoto(){
+  if(shot>=3) return;
+  countdown.style.display="flex";
 
-/* ===== BUILD FINAL ===== */
-async function buildFinal(){
-  const ctx = finalCanvas.getContext("2d");
-  finalCanvas.width = 420;
-  finalCanvas.height = 1200;
-
-  ctx.fillStyle="#fffdfa";
-  ctx.fillRect(0,0,420,1200);
-
-  const imgs = await Promise.all(
-    shots.map(src=>new Promise(r=>{
-      const i=new Image();
-      i.onload=()=>r(i);
-      i.src=src;
-    }))
-  );
-
-  imgs.forEach((img,i)=>{
-    ctx.drawImage(img,30,40+i*360,360,300);
-    ctx.strokeStyle="#e0d5c7";
-    ctx.lineWidth=2;
-    ctx.strokeRect(30,40+i*360,360,300);
-  });
-
-  ctx.fillStyle="#6b4b35";
-  ctx.font="20px sans-serif";
-  ctx.textAlign="center";
-  ctx.fillText("TOMOPHOTO",210,1160);
-
-  const url = finalCanvas.toDataURL("image/png");
-  resultImg.src = url;
-  downloadBtn.href = url;
-  downloadBtn.style.opacity="1";
-  downloadBtn.style.pointerEvents="auto";
-}
-
-/* ===== FLOW ===== */
-startBtn.onclick = async ()=>{
-  shots=[];
-  startBtn.disabled=true;
-  downloadBtn.style.opacity=".4";
-  downloadBtn.style.pointerEvents="none";
-  resultImg.src="";
-
-  for(let i=0;i<3;i++){
-    await countdown(3);
-    snap();
+  for(let i=3;i>0;i--){
+    countdown.textContent=i;
+    await sleep(700);
   }
 
-  await buildFinal();
-  startBtn.disabled=false;
-};
+  countdown.style.display="none";
 
-/* ===== RESET ===== */
-resetBtn.onclick = ()=>{
-  shots=[];
-  resultImg.src="";
-  countdownEl.textContent="";
-  downloadBtn.style.opacity=".4";
-  downloadBtn.style.pointerEvents="none";
-};
+  canvas.width = video.videoWidth;
+  canvas.height = video.videoHeight;
+  canvas.getContext("2d").drawImage(video,0,0);
+  previews[shot].src = canvas.toDataURL("image/png");
+  shot++;
+}
+
+shutter.onclick = takePhoto;
 </script>
 
 </body>
